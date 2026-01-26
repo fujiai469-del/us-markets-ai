@@ -140,3 +140,77 @@ export async function batchAnalyzeNews(articles) {
   }
   return results;
 }
+
+const CATEGORIES = ['経済', '国際情勢', 'テクノロジー', '企業決算', '金融政策', 'その他'];
+
+export async function categorizeArticles(articles) {
+  try {
+    const articleList = articles.map((a, i) => `${i + 1}. ${a.title}`).join('\n');
+
+    const prompt = `以下のニュースタイトルをカテゴリーに分類してください。
+
+カテゴリー一覧:
+- 経済: GDP、雇用統計、消費者物価、景気動向など
+- 国際情勢: 地政学、貿易摩擦、外交、戦争・紛争など
+- テクノロジー: AI、半導体、ソフトウェア、イノベーションなど
+- 企業決算: 四半期決算、業績予想、M&Aなど
+- 金融政策: FRB、金利、量的緩和、中央銀行など
+- その他: 上記に当てはまらないもの
+
+ニュース一覧:
+${articleList}
+
+各ニュースに対応するカテゴリーをJSON配列で返してください（カテゴリー名のみ）:
+["経済", "テクノロジー", "国際情勢", ...]`;
+
+    const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        contents: [
+          {
+            parts: [
+              {
+                text: prompt,
+              },
+            ],
+          },
+        ],
+        generationConfig: {
+          temperature: 0.2,
+          maxOutputTokens: 1000,
+        },
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Gemini API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+
+    if (!text) {
+      throw new Error('No response from Gemini');
+    }
+
+    const jsonMatch = text.match(/\[[\s\S]*\]/);
+    if (!jsonMatch) {
+      throw new Error('Invalid JSON response');
+    }
+
+    const categories = JSON.parse(jsonMatch[0]);
+
+    return articles.map((article, index) => ({
+      ...article,
+      category: categories[index] || 'その他',
+    }));
+  } catch (error) {
+    console.error('Failed to categorize articles:', error);
+    return articles.map(article => ({ ...article, category: 'その他' }));
+  }
+}
+
+export { CATEGORIES };
