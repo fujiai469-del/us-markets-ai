@@ -12,8 +12,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['icon.svg'],
       manifest: {
-        name: 'US Markets AI',
-        short_name: 'USMarketsAI',
+        name: '米国株AIニュース',
+        short_name: '米国株AI',
         description: '米国株ニュースをAIで分析するPWAアプリ',
         theme_color: '#0f172a',
         background_color: '#0f172a',

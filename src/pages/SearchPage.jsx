@@ -6,14 +6,14 @@ import NewsCard from '../components/NewsCard';
 import LoadingSpinner from '../components/LoadingSpinner';
 
 const quickSearches = [
-  'Apple',
-  'Tesla',
-  'NVIDIA',
-  'Microsoft',
-  'Amazon',
-  'Fed 金利',
+  'アップル',
+  'テスラ',
+  'エヌビディア',
+  'マイクロソフト',
+  'アマゾン',
+  'FRB 金利',
   'インフレ',
-  '決算',
+  '決算発表',
 ];
 
 export default function SearchPage() {

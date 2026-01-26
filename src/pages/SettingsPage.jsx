@@ -43,7 +43,7 @@ export default function SettingsPage() {
 
             <div className="space-y-4">
               <div>
-                <label className="block text-xs text-slate-400 mb-1.5">News API Key</label>
+                <label className="block text-xs text-slate-400 mb-1.5">ニュースAPIキー</label>
                 <input
                   type="password"
                   value={newsApiKey}
@@ -54,7 +54,7 @@ export default function SettingsPage() {
               </div>
 
               <div>
-                <label className="block text-xs text-slate-400 mb-1.5">Gemini API Key</label>
+                <label className="block text-xs text-slate-400 mb-1.5">Gemini APIキー</label>
                 <input
                   type="password"
                   value={geminiApiKey}
@@ -94,7 +94,7 @@ export default function SettingsPage() {
                 rel="noopener noreferrer"
                 className="flex items-center justify-between py-2 text-sm text-slate-300 hover:text-white transition-colors"
               >
-                <span>News API</span>
+                <span>ニュースAPI公式サイト</span>
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                 </svg>
@@ -105,7 +105,7 @@ export default function SettingsPage() {
                 rel="noopener noreferrer"
                 className="flex items-center justify-between py-2 text-sm text-slate-300 hover:text-white transition-colors"
               >
-                <span>Google AI Studio</span>
+                <span>Google AI Studio（Gemini）</span>
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                 </svg>
