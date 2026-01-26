@@ -1,11 +1,8 @@
-const NEWS_API_KEY = import.meta.env.VITE_NEWS_API_KEY;
-const BASE_URL = 'https://newsapi.org/v2';
+const API_BASE = '/api/news';
 
-export async function fetchUSStockNews(query = 'US stocks OR Wall Street OR NASDAQ OR S&P 500') {
+export async function fetchUSStockNews() {
   try {
-    const response = await fetch(
-      `${BASE_URL}/everything?q=${encodeURIComponent(query)}&language=en&sortBy=publishedAt&pageSize=20&apiKey=${NEWS_API_KEY}`
-    );
+    const response = await fetch(`${API_BASE}?type=stocks`);
 
     if (!response.ok) {
       throw new Error(`News API error: ${response.status}`);
@@ -21,9 +18,7 @@ export async function fetchUSStockNews(query = 'US stocks OR Wall Street OR NASD
 
 export async function fetchTopBusinessNews() {
   try {
-    const response = await fetch(
-      `${BASE_URL}/top-headlines?country=us&category=business&pageSize=20&apiKey=${NEWS_API_KEY}`
-    );
+    const response = await fetch(`${API_BASE}?type=headlines`);
 
     if (!response.ok) {
       throw new Error(`News API error: ${response.status}`);
@@ -39,9 +34,7 @@ export async function fetchTopBusinessNews() {
 
 export async function searchNews(query) {
   try {
-    const response = await fetch(
-      `${BASE_URL}/everything?q=${encodeURIComponent(query)}&language=en&sortBy=relevancy&pageSize=20&apiKey=${NEWS_API_KEY}`
-    );
+    const response = await fetch(`${API_BASE}?type=search&query=${encodeURIComponent(query)}`);
 
     if (!response.ok) {
       throw new Error(`News API error: ${response.status}`);
