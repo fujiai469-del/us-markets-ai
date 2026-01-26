@@ -10,7 +10,6 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: 'prompt',
-      injectRegister: false,
       includeAssets: ['icon.svg'],
       manifest: {
         name: '米国株AIニュース',
@@ -43,24 +42,9 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+        cleanupOutdatedCaches: true,
         skipWaiting: false,
-        clientsClaim: false,
-        runtimeCaching: [
-          {
-            urlPattern: /^https:\/\/newsapi\.org\/v2\/.*/i,
-            handler: 'NetworkFirst',
-            options: {
-              cacheName: 'news-api-cache',
-              expiration: {
-                maxEntries: 50,
-                maxAgeSeconds: 60 * 30 // 30 minutes
-              },
-              cacheableResponse: {
-                statuses: [0, 200]
-              }
-            }
-          }
-        ]
+        clientsClaim: false
       }
     })
   ],
