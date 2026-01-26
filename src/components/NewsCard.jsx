@@ -10,6 +10,15 @@ export default function NewsCard({ article, onBookmark, isBookmarked, onAnalyze,
     return date.toLocaleDateString('ja-JP', { month: 'short', day: 'numeric' });
   };
 
+  const getImportanceLabel = (importance) => {
+    switch (importance) {
+      case '高': return '投資影響: 大';
+      case '中': return '投資影響: 中';
+      case '低': return '投資影響: 小';
+      default: return importance;
+    }
+  };
+
   return (
     <div className="mx-4 mb-3 rounded-xl bg-slate-800/60 border border-slate-700/50 overflow-hidden hover:bg-slate-800/80 transition-all duration-200">
       <div className="flex p-3 gap-3">
@@ -33,6 +42,13 @@ export default function NewsCard({ article, onBookmark, isBookmarked, onAnalyze,
         </div>
       </div>
 
+      {/* 記事の概要（常に表示） */}
+      {article.description && !analysis && (
+        <div className="px-3 pb-2">
+          <p className="text-xs text-slate-400 leading-relaxed line-clamp-3">{article.description}</p>
+        </div>
+      )}
+
       {analysis && (
         <div className="px-3 pb-3">
           <div className="p-2.5 rounded-lg bg-slate-700/50 border border-slate-600/30">
@@ -42,18 +58,23 @@ export default function NewsCard({ article, onBookmark, isBookmarked, onAnalyze,
                   <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
                 </svg>
               </div>
-              <span className="text-xs font-medium text-cyan-400">AI要約</span>
+              <span className="text-xs font-medium text-cyan-400">AI分析</span>
               {analysis.importance && (
                 <span className={`ml-auto text-xs px-1.5 py-0.5 rounded ${
                   analysis.importance === '高' ? 'bg-red-500/20 text-red-400' :
                   analysis.importance === '中' ? 'bg-yellow-500/20 text-yellow-400' :
                   'bg-green-500/20 text-green-400'
                 }`}>
-                  {analysis.importance}
+                  {getImportanceLabel(analysis.importance)}
                 </span>
               )}
             </div>
-            <p className="text-xs text-slate-300 leading-relaxed">{analysis.summary}</p>
+            <p className="text-xs text-slate-300 leading-relaxed mb-2">{analysis.summary}</p>
+            {analysis.impact && (
+              <p className="text-xs text-cyan-300/80 leading-relaxed">
+                <span className="font-medium">💡 </span>{analysis.impact}
+              </p>
+            )}
           </div>
         </div>
       )}
@@ -61,8 +82,12 @@ export default function NewsCard({ article, onBookmark, isBookmarked, onAnalyze,
       <div className="flex items-center justify-between px-3 pb-3 gap-2">
         <button
           onClick={() => onAnalyze(article)}
-          disabled={isAnalyzing}
-          className="flex-1 py-2 px-3 rounded-lg bg-gradient-to-r from-blue-500/20 to-cyan-500/20 border border-blue-500/30 text-cyan-400 text-xs font-medium disabled:opacity-50 hover:from-blue-500/30 hover:to-cyan-500/30 transition-all duration-200"
+          disabled={isAnalyzing || analysis}
+          className={`flex-1 py-2 px-3 rounded-lg text-xs font-medium transition-all duration-200 ${
+            analysis
+              ? 'bg-slate-700/30 border border-slate-600/30 text-slate-500 cursor-default'
+              : 'bg-gradient-to-r from-blue-500/20 to-cyan-500/20 border border-blue-500/30 text-cyan-400 disabled:opacity-50 hover:from-blue-500/30 hover:to-cyan-500/30'
+          }`}
         >
           {isAnalyzing ? (
             <span className="flex items-center justify-center gap-1.5">
@@ -72,8 +97,10 @@ export default function NewsCard({ article, onBookmark, isBookmarked, onAnalyze,
               </svg>
               分析中
             </span>
+          ) : analysis ? (
+            '分析済み ✓'
           ) : (
-            'AI分析'
+            'AIで分析する'
           )}
         </button>
         <button
@@ -93,6 +120,7 @@ export default function NewsCard({ article, onBookmark, isBookmarked, onAnalyze,
           target="_blank"
           rel="noopener noreferrer"
           className="p-2 rounded-lg bg-slate-700/50 border border-slate-600/50 text-slate-400 hover:text-white transition-all duration-200"
+          title="元記事を読む"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />

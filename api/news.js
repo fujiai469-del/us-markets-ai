@@ -8,10 +8,14 @@ export default async function handler(req, res) {
 
   let url;
   if (type === 'search' && query) {
-    url = `https://newsapi.org/v2/everything?q=${encodeURIComponent(query)}&language=en&sortBy=relevancy&pageSize=20&apiKey=${apiKey}`;
+    // 検索時は株・金融関連に絞る
+    url = `https://newsapi.org/v2/everything?q=${encodeURIComponent(query + ' AND (stock OR market OR trading OR investor)')}&language=en&sortBy=relevancy&pageSize=20&apiKey=${apiKey}`;
   } else if (type === 'stocks') {
-    url = `https://newsapi.org/v2/everything?q=${encodeURIComponent('US stocks OR Wall Street OR NASDAQ OR S&P 500')}&language=en&sortBy=publishedAt&pageSize=20&apiKey=${apiKey}`;
+    // 米国株・金融に特化したキーワード
+    const stockQuery = '(NYSE OR NASDAQ OR "S&P 500" OR Dow OR earnings OR "stock market" OR "Fed rate" OR Treasury OR "Wall Street") AND (stock OR shares OR trading OR investor OR market)';
+    url = `https://newsapi.org/v2/everything?q=${encodeURIComponent(stockQuery)}&language=en&sortBy=publishedAt&pageSize=25&apiKey=${apiKey}`;
   } else {
+    // ビジネストップニュース
     url = `https://newsapi.org/v2/top-headlines?country=us&category=business&pageSize=20&apiKey=${apiKey}`;
   }
 
