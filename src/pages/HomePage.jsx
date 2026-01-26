@@ -16,6 +16,7 @@ export default function HomePage() {
   const [viewMode, setViewMode] = useState('timeline');
   const [isCategorizing, setIsCategorizing] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('すべて');
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   useEffect(() => {
     loadNews();
@@ -51,8 +52,6 @@ export default function HomePage() {
       setIsCategorizing(false);
     }
   };
-
-  const [isRefreshing, setIsRefreshing] = useState(false);
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
