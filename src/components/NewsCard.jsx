@@ -64,12 +64,12 @@ export default function NewsCard({ article, onBookmark, isBookmarked, onAnalyze,
         <div className="px-3 pb-3">
           <div className="p-2.5 rounded-lg bg-slate-700/50 border border-slate-600/30">
             <div className="flex items-center gap-1.5 mb-1.5">
-              <div className="w-4 h-4 rounded-full bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center">
+              <div className="w-4 h-4 rounded-full bg-blue-500 flex items-center justify-center">
                 <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
                 </svg>
               </div>
-              <span className="text-xs font-medium text-cyan-400">AI分析</span>
+              <span className="text-xs font-medium text-blue-400">AI分析</span>
               {analysis.importance && (
                 <span className={`ml-auto text-xs px-1.5 py-0.5 rounded ${
                   analysis.importance === '高' ? 'bg-red-500/20 text-red-400' :
@@ -82,7 +82,7 @@ export default function NewsCard({ article, onBookmark, isBookmarked, onAnalyze,
             </div>
             <p className="text-xs text-slate-300 leading-relaxed mb-2">{analysis.summary}</p>
             {analysis.impact && (
-              <p className="text-xs text-cyan-300/80 leading-relaxed">
+              <p className="text-xs text-blue-300/80 leading-relaxed">
                 <span className="font-medium">💡 </span>{analysis.impact}
               </p>
             )}
@@ -97,15 +97,15 @@ export default function NewsCard({ article, onBookmark, isBookmarked, onAnalyze,
             onAnalyze(article);
           }}
           disabled={isAnalyzing || analysis}
-          className={`py-1.5 px-3 rounded-lg text-xs font-medium transition-all duration-200 ${
+          className={`py-2.5 px-4 rounded-xl text-sm font-medium transition-all duration-200 ${
             analysis
-              ? 'bg-slate-700/30 border border-slate-600/30 text-slate-500 cursor-default'
-              : 'bg-gradient-to-r from-blue-500/20 to-cyan-500/20 border border-blue-500/30 text-cyan-400 disabled:opacity-50 hover:from-blue-500/30 hover:to-cyan-500/30'
+              ? 'bg-slate-700 text-slate-500 cursor-default'
+              : 'bg-blue-600 text-white disabled:opacity-50 hover:bg-blue-500'
           }`}
         >
           {isAnalyzing ? (
             <span className="flex items-center justify-center gap-1.5">
-              <svg className="w-3 h-3 animate-spin" viewBox="0 0 24 24" fill="none">
+              <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
               </svg>
@@ -122,13 +122,13 @@ export default function NewsCard({ article, onBookmark, isBookmarked, onAnalyze,
             e.stopPropagation();
             onBookmark(article);
           }}
-          className={`p-2 rounded-lg border transition-all duration-200 ${
+          className={`p-2.5 rounded-xl transition-all duration-200 ${
             isBookmarked
-              ? 'bg-cyan-500/20 border-cyan-500/50 text-cyan-400'
-              : 'bg-slate-700/50 border-slate-600/50 text-slate-400 hover:text-white'
+              ? 'bg-blue-600 text-white'
+              : 'bg-slate-700 text-slate-400 hover:text-white hover:bg-slate-600'
           }`}
         >
-          <svg className="w-4 h-4" fill={isBookmarked ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-5 h-5" fill={isBookmarked ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
           </svg>
         </button>

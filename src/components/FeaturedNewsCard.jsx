@@ -26,7 +26,7 @@ export default function FeaturedNewsCard({ article, onBookmark, isBookmarked, on
   return (
     <div
       onClick={handleCardClick}
-      className="mx-4 mb-4 rounded-2xl bg-slate-800/80 overflow-hidden gradient-border shadow-lg shadow-black/20 cursor-pointer active:scale-[0.99] transition-transform"
+      className="mx-4 mb-4 rounded-2xl bg-slate-800 border border-slate-700 overflow-hidden shadow-lg shadow-black/20 cursor-pointer active:scale-[0.99] transition-transform"
     >
       {article.urlToImage && (
         <div className="relative h-48 overflow-hidden">
@@ -54,12 +54,12 @@ export default function FeaturedNewsCard({ article, onBookmark, isBookmarked, on
         {analysis && (
           <div className="mb-3 p-3 rounded-xl bg-slate-700/50 border border-slate-600/50">
             <div className="flex items-center gap-2 mb-2">
-              <div className="w-5 h-5 rounded-full bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center">
+              <div className="w-5 h-5 rounded-full bg-blue-500 flex items-center justify-center">
                 <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
                 </svg>
               </div>
-              <span className="text-xs font-semibold text-cyan-400">AI分析</span>
+              <span className="text-xs font-semibold text-blue-400">AI分析</span>
               {analysis.importance && (
                 <span className={`ml-auto text-xs px-2 py-0.5 rounded-full ${
                   analysis.importance === '高' ? 'bg-red-500/20 text-red-400' :
@@ -72,7 +72,7 @@ export default function FeaturedNewsCard({ article, onBookmark, isBookmarked, on
             </div>
             <p className="text-sm text-slate-300 leading-relaxed">{analysis.summary}</p>
             {analysis.impact && (
-              <p className="text-sm text-cyan-300/80 mt-2">
+              <p className="text-sm text-blue-300/80 mt-2">
                 <span className="font-medium">💡 </span>{analysis.impact}
               </p>
             )}
@@ -86,10 +86,10 @@ export default function FeaturedNewsCard({ article, onBookmark, isBookmarked, on
               onAnalyze(article);
             }}
             disabled={isAnalyzing || analysis}
-            className={`py-2 px-4 rounded-xl text-sm font-semibold transition-all duration-200 ${
+            className={`py-3 px-5 rounded-xl text-sm font-semibold transition-all duration-200 ${
               analysis
-                ? 'bg-slate-700/50 text-slate-400 cursor-default'
-                : 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white disabled:opacity-50 hover:shadow-lg hover:shadow-cyan-500/20'
+                ? 'bg-slate-700 text-slate-500 cursor-default'
+                : 'bg-blue-600 text-white disabled:opacity-50 hover:bg-blue-500'
             }`}
           >
             {isAnalyzing ? (
@@ -111,10 +111,10 @@ export default function FeaturedNewsCard({ article, onBookmark, isBookmarked, on
               e.stopPropagation();
               onBookmark(article);
             }}
-            className={`p-2.5 rounded-xl border transition-all duration-200 ${
+            className={`p-3 rounded-xl transition-all duration-200 ${
               isBookmarked
-                ? 'bg-cyan-500/20 border-cyan-500/50 text-cyan-400'
-                : 'bg-slate-700/50 border-slate-600/50 text-slate-400 hover:text-white'
+                ? 'bg-blue-600 text-white'
+                : 'bg-slate-700 text-slate-400 hover:text-white hover:bg-slate-600'
             }`}
           >
             <svg className="w-5 h-5" fill={isBookmarked ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">
