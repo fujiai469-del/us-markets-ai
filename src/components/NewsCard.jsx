@@ -19,8 +19,19 @@ export default function NewsCard({ article, onBookmark, isBookmarked, onAnalyze,
     }
   };
 
+  const displayTitle = article.titleJa || article.title;
+
+  const handleCardClick = (e) => {
+    // ボタンやリンクがクリックされた場合は何もしない
+    if (e.target.closest('button') || e.target.closest('a')) return;
+    window.open(article.url, '_blank', 'noopener,noreferrer');
+  };
+
   return (
-    <div className="mx-4 mb-3 rounded-xl bg-slate-800/60 border border-slate-700/50 overflow-hidden hover:bg-slate-800/80 transition-all duration-200">
+    <div
+      onClick={handleCardClick}
+      className="mx-4 mb-3 rounded-xl bg-slate-800/60 border border-slate-700/50 overflow-hidden hover:bg-slate-800/80 transition-all duration-200 cursor-pointer active:scale-[0.98]"
+    >
       <div className="flex p-3 gap-3">
         {article.urlToImage && (
           <div className="flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden">
@@ -33,7 +44,7 @@ export default function NewsCard({ article, onBookmark, isBookmarked, onAnalyze,
           </div>
         )}
         <div className="flex-1 min-w-0">
-          <h3 className="text-sm font-semibold text-white line-clamp-2 mb-1">{article.title}</h3>
+          <h3 className="text-sm font-semibold text-white line-clamp-2 mb-1">{displayTitle}</h3>
           <div className="flex items-center gap-2 text-xs text-slate-400">
             <span>{article.source?.name}</span>
             <span>•</span>
@@ -45,7 +56,7 @@ export default function NewsCard({ article, onBookmark, isBookmarked, onAnalyze,
       {/* 記事の概要（常に表示） */}
       {article.description && !analysis && (
         <div className="px-3 pb-2">
-          <p className="text-xs text-slate-400 leading-relaxed line-clamp-3">{article.description}</p>
+          <p className="text-xs text-slate-400 leading-relaxed line-clamp-2">{article.description}</p>
         </div>
       )}
 
@@ -79,11 +90,14 @@ export default function NewsCard({ article, onBookmark, isBookmarked, onAnalyze,
         </div>
       )}
 
-      <div className="flex items-center justify-between px-3 pb-3 gap-2">
+      <div className="flex items-center justify-end px-3 pb-3 gap-2">
         <button
-          onClick={() => onAnalyze(article)}
+          onClick={(e) => {
+            e.stopPropagation();
+            onAnalyze(article);
+          }}
           disabled={isAnalyzing || analysis}
-          className={`flex-1 py-2 px-3 rounded-lg text-xs font-medium transition-all duration-200 ${
+          className={`py-1.5 px-3 rounded-lg text-xs font-medium transition-all duration-200 ${
             analysis
               ? 'bg-slate-700/30 border border-slate-600/30 text-slate-500 cursor-default'
               : 'bg-gradient-to-r from-blue-500/20 to-cyan-500/20 border border-blue-500/30 text-cyan-400 disabled:opacity-50 hover:from-blue-500/30 hover:to-cyan-500/30'
@@ -98,13 +112,16 @@ export default function NewsCard({ article, onBookmark, isBookmarked, onAnalyze,
               分析中
             </span>
           ) : analysis ? (
-            '分析済み ✓'
+            '分析済み'
           ) : (
-            'AIで分析する'
+            'AI分析'
           )}
         </button>
         <button
-          onClick={() => onBookmark(article)}
+          onClick={(e) => {
+            e.stopPropagation();
+            onBookmark(article);
+          }}
           className={`p-2 rounded-lg border transition-all duration-200 ${
             isBookmarked
               ? 'bg-cyan-500/20 border-cyan-500/50 text-cyan-400'
@@ -115,17 +132,6 @@ export default function NewsCard({ article, onBookmark, isBookmarked, onAnalyze,
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
           </svg>
         </button>
-        <a
-          href={article.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="p-2 rounded-lg bg-slate-700/50 border border-slate-600/50 text-slate-400 hover:text-white transition-all duration-200"
-          title="元記事を読む"
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-          </svg>
-        </a>
       </div>
     </div>
   );

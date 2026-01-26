@@ -62,6 +62,70 @@ export async function analyzeNewsArticle(article) {
   }
 }
 
+export async function translateArticles(articles) {
+  try {
+    const titlesToTranslate = articles.map((a, i) => `${i + 1}. ${a.title}`).join('\n');
+
+    const prompt = `以下のニュースタイトルを日本語に翻訳してください。番号と対応する翻訳のみをJSON配列で返してください。
+
+${titlesToTranslate}
+
+以下の形式でJSON配列で回答してください（JSONのみ、他のテキストは不要）:
+["翻訳1", "翻訳2", "翻訳3", ...]`;
+
+    const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        contents: [
+          {
+            parts: [
+              {
+                text: prompt,
+              },
+            ],
+          },
+        ],
+        generationConfig: {
+          temperature: 0.3,
+          maxOutputTokens: 2000,
+        },
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Gemini API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+
+    if (!text) {
+      throw new Error('No response from Gemini');
+    }
+
+    // Extract JSON array from the response
+    const jsonMatch = text.match(/\[[\s\S]*\]/);
+    if (!jsonMatch) {
+      throw new Error('Invalid JSON response');
+    }
+
+    const translations = JSON.parse(jsonMatch[0]);
+
+    // Map translations to articles
+    return articles.map((article, index) => ({
+      ...article,
+      titleJa: translations[index] || article.title,
+    }));
+  } catch (error) {
+    console.error('Failed to translate articles:', error);
+    // Return original articles if translation fails
+    return articles;
+  }
+}
+
 export async function batchAnalyzeNews(articles) {
   const results = [];
   for (const article of articles.slice(0, 5)) {
