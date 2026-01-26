@@ -1,15 +1,30 @@
 @import "tailwindcss";
 
 :root {
-  --color-bg-primary: #0f172a;
-  --color-bg-secondary: #1e293b;
-  --color-bg-card: #1e293b;
-  --color-accent-start: #3b82f6;
-  --color-accent-end: #06b6d4;
-  --color-text-primary: #ffffff;
-  --color-text-secondary: #94a3b8;
-  --color-positive: #22c55e;
-  --color-negative: #ef4444;
+  /* ウォール街テーマ - カラーパレット */
+  --color-bg-primary: #141414;
+  --color-bg-secondary: #1C1B1A;
+  --color-bg-card: #1F242B;
+  --color-bg-elevated: #202632;
+
+  /* ゴールド・ブロンズ系アクセント */
+  --color-gold: #B59A5A;
+  --color-gold-dark: #9C8450;
+  --color-bronze: #6E5A3C;
+  --color-gold-muted: #8B7A4E;
+
+  /* テキストカラー */
+  --color-text-primary: #E6E3DC;
+  --color-text-secondary: #9FA3A9;
+  --color-text-muted: #6B7280;
+
+  /* ステータスカラー */
+  --color-positive: #B59A5A;
+  --color-negative: #A65D57;
+
+  /* ボーダー */
+  --color-border: #2A2A2A;
+  --color-border-gold: rgba(181, 154, 90, 0.3);
 }
 
 * {
@@ -19,7 +34,7 @@
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Georgia', 'Times New Roman', serif;
   background-color: var(--color-bg-primary);
   color: var(--color-text-primary);
   min-height: 100vh;
@@ -33,34 +48,43 @@ body {
   flex-direction: column;
 }
 
-.gradient-text {
-  background: linear-gradient(135deg, var(--color-accent-start), var(--color-accent-end));
+/* ゴールドグラデーションテキスト */
+.text-gold-gradient {
+  background: linear-gradient(135deg, var(--color-gold), var(--color-gold-dark));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-.gradient-border {
+/* カードの上部ゴールドライン */
+.card-gold-border {
   position: relative;
 }
 
-.gradient-border::before {
+.card-gold-border::before {
   content: '';
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, var(--color-accent-start), var(--color-accent-end));
-  border-radius: 12px 12px 0 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--color-gold), transparent);
+  border-radius: 16px 16px 0 0;
 }
 
+/* ガラス効果（弱め） */
 .glass-effect {
-  background: rgba(30, 41, 59, 0.8);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: rgba(31, 36, 43, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
+/* 月桂冠パターン背景 */
+.laurel-pattern {
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 5c-2 4-1 8 2 10-4-1-7 1-8 5 0-4-3-6-7-5 3-2 4-6 2-10 3 2 7 2 11 0z' fill='%23B59A5A' fill-opacity='0.03'/%3E%3C/svg%3E");
+}
+
+/* アニメーション */
 @keyframes spin {
   to {
     transform: rotate(360deg);
@@ -76,10 +100,49 @@ body {
   }
 }
 
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
 .animate-spin {
   animation: spin 1s linear infinite;
 }
 
 .animate-pulse {
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, transparent, rgba(181, 154, 90, 0.1), transparent);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+/* フォーカス時のゴールドリング */
+button:focus-visible, a:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 2px;
+}
+
+/* スクロールバーのスタイル */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-bronze);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-gold-dark);
 }

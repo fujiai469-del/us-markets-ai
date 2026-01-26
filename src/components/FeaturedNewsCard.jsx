@@ -8,9 +8,9 @@ export default function FeaturedNewsCard({ article, onBookmark, isBookmarked, on
 
   const getImportanceLabel = (importance) => {
     switch (importance) {
-      case '高': return '投資影響: 大';
-      case '中': return '投資影響: 中';
-      case '低': return '投資影響: 小';
+      case '高': return '重要度: 高';
+      case '中': return '重要度: 中';
+      case '低': return '重要度: 低';
       default: return importance;
     }
   };
@@ -18,7 +18,6 @@ export default function FeaturedNewsCard({ article, onBookmark, isBookmarked, on
   const displayTitle = article.titleJa || article.title;
 
   const handleCardClick = (e) => {
-    // ボタンやリンクがクリックされた場合は何もしない
     if (e.target.closest('button') || e.target.closest('a')) return;
     window.open(article.url, '_blank', 'noopener,noreferrer');
   };
@@ -26,70 +25,75 @@ export default function FeaturedNewsCard({ article, onBookmark, isBookmarked, on
   return (
     <div
       onClick={handleCardClick}
-      className="mx-4 mb-4 rounded-2xl bg-slate-800 border border-slate-700 overflow-hidden shadow-lg shadow-black/20 cursor-pointer active:scale-[0.99] transition-transform"
+      className="mx-4 mb-5 rounded-2xl bg-[#1F242B] border border-[#2A2A2A] overflow-hidden cursor-pointer active:scale-[0.99] transition-transform card-gold-border"
     >
       {article.urlToImage && (
-        <div className="relative h-48 overflow-hidden">
+        <div className="relative h-52 overflow-hidden">
           <img
             src={article.urlToImage}
             alt={displayTitle}
             className="w-full h-full object-cover"
             onError={(e) => { e.target.style.display = 'none'; }}
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#141414] via-[#141414]/60 to-transparent" />
+          {/* トップニュースバッジ */}
+          <div className="absolute top-3 left-3 px-3 py-1 rounded-full bg-[#B59A5A]/90 text-[#141414] text-xs font-semibold tracking-wide">
+            TOP NEWS
+          </div>
         </div>
       )}
-      <div className="p-4">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-xs text-slate-400">{article.source?.name}</span>
-          <span className="text-xs text-slate-500">{formatDate(article.publishedAt)}</span>
+      <div className="p-5">
+        <div className="flex items-center justify-between mb-3">
+          <span className="text-sm text-[#B59A5A] font-medium">{article.source?.name}</span>
+          <span className="text-xs text-[#6B7280]">{formatDate(article.publishedAt)}</span>
         </div>
-        <h2 className="text-lg font-bold text-white mb-2 line-clamp-2">{displayTitle}</h2>
+        <h2 className="text-xl font-bold text-[#E6E3DC] mb-3 leading-relaxed" style={{fontFamily: 'Georgia, serif'}}>
+          {displayTitle}
+        </h2>
 
-        {/* 記事の概要（AI分析前に表示） */}
         {article.description && !analysis && (
-          <p className="text-sm text-slate-400 leading-relaxed mb-3 line-clamp-2">{article.description}</p>
+          <p className="text-sm text-[#9FA3A9] leading-relaxed mb-4 line-clamp-2">{article.description}</p>
         )}
 
         {analysis && (
-          <div className="mb-3 p-3 rounded-xl bg-slate-700/50 border border-slate-600/50">
-            <div className="flex items-center gap-2 mb-2">
-              <div className="w-5 h-5 rounded-full bg-blue-500 flex items-center justify-center">
-                <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
+          <div className="mb-4 p-4 rounded-xl bg-[#141414] border border-[#B59A5A]/20">
+            <div className="flex items-center gap-2 mb-3">
+              <div className="w-6 h-6 rounded-full bg-[#B59A5A]/20 flex items-center justify-center">
+                <svg className="w-3.5 h-3.5 text-[#B59A5A]" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
                 </svg>
               </div>
-              <span className="text-xs font-semibold text-blue-400">AI分析</span>
+              <span className="text-sm font-semibold text-[#B59A5A] tracking-wide">AI分析</span>
               {analysis.importance && (
-                <span className={`ml-auto text-xs px-2 py-0.5 rounded-full ${
-                  analysis.importance === '高' ? 'bg-red-500/20 text-red-400' :
-                  analysis.importance === '中' ? 'bg-yellow-500/20 text-yellow-400' :
-                  'bg-green-500/20 text-green-400'
+                <span className={`ml-auto text-xs px-2.5 py-1 rounded-full font-medium ${
+                  analysis.importance === '高' ? 'bg-[#A65D57]/20 text-[#D4847E]' :
+                  analysis.importance === '中' ? 'bg-[#B59A5A]/20 text-[#B59A5A]' :
+                  'bg-[#6E5A3C]/20 text-[#9C8450]'
                 }`}>
                   {getImportanceLabel(analysis.importance)}
                 </span>
               )}
             </div>
-            <p className="text-sm text-slate-300 leading-relaxed">{analysis.summary}</p>
+            <p className="text-sm text-[#E6E3DC] leading-relaxed">{analysis.summary}</p>
             {analysis.impact && (
-              <p className="text-sm text-blue-300/80 mt-2">
-                <span className="font-medium">💡 </span>{analysis.impact}
+              <p className="text-sm text-[#9FA3A9] mt-3 leading-relaxed">
+                <span className="text-[#B59A5A]">▸ </span>{analysis.impact}
               </p>
             )}
           </div>
         )}
 
-        <div className="flex items-center justify-end gap-2">
+        <div className="flex items-center justify-end gap-3">
           <button
             onClick={(e) => {
               e.stopPropagation();
               onAnalyze(article);
             }}
             disabled={isAnalyzing || analysis}
-            className={`py-3 px-5 rounded-xl text-sm font-semibold transition-all duration-200 ${
+            className={`py-3 px-6 rounded-xl text-sm font-semibold transition-all duration-300 ${
               analysis
-                ? 'bg-slate-700 text-slate-500 cursor-default'
-                : 'bg-blue-600 text-white disabled:opacity-50 hover:bg-blue-500'
+                ? 'bg-[#1C1B1A] text-[#6B7280] cursor-default border border-[#2A2A2A]'
+                : 'bg-gradient-to-r from-[#B59A5A] to-[#9C8450] text-[#141414] disabled:opacity-50 hover:from-[#C4A96A] hover:to-[#AB9360] shadow-lg shadow-[#B59A5A]/10'
             }`}
           >
             {isAnalyzing ? (
@@ -111,14 +115,14 @@ export default function FeaturedNewsCard({ article, onBookmark, isBookmarked, on
               e.stopPropagation();
               onBookmark(article);
             }}
-            className={`p-3 rounded-xl transition-all duration-200 ${
+            className={`p-3 rounded-xl transition-all duration-300 border ${
               isBookmarked
-                ? 'bg-blue-600 text-white'
-                : 'bg-slate-700 text-slate-400 hover:text-white hover:bg-slate-600'
+                ? 'bg-[#B59A5A]/20 border-[#B59A5A]/50 text-[#B59A5A]'
+                : 'bg-[#1C1B1A] border-[#2A2A2A] text-[#6B7280] hover:text-[#B59A5A] hover:border-[#B59A5A]/30'
             }`}
           >
             <svg className="w-5 h-5" fill={isBookmarked ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
             </svg>
           </button>
         </div>

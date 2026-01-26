@@ -54,36 +54,42 @@ export default function SearchPage() {
   };
 
   return (
-    <div className="flex-1 pb-24">
-      <div className="py-4 px-4">
-        <form onSubmit={handleSearch} className="mb-4">
+    <div className="flex-1 pb-24 bg-[#141414]">
+      <div className="py-5 px-5">
+        {/* ヘッダー */}
+        <div className="mb-5">
+          <h2 className="text-xl font-bold text-[#E6E3DC] tracking-wide" style={{fontFamily: 'Georgia, serif'}}>Search News</h2>
+          <p className="text-xs text-[#6B7280] mt-0.5 tracking-wider">ニュース検索</p>
+        </div>
+
+        <form onSubmit={handleSearch} className="mb-5">
           <div className="relative">
             <input
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="ニュースを検索..."
-              className="w-full py-3 pl-11 pr-4 rounded-xl bg-slate-800/80 border border-slate-700/50 text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/30 transition-all"
+              placeholder="キーワードを入力..."
+              className="w-full py-3.5 pl-12 pr-4 rounded-xl bg-[#1F242B] border border-[#2A2A2A] text-[#E6E3DC] placeholder-[#6B7280] focus:outline-none focus:border-[#B59A5A]/50 focus:ring-1 focus:ring-[#B59A5A]/30 transition-all"
             />
             <svg
-              className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500"
+              className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#6B7280]"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
           </div>
         </form>
 
         <div className="mb-6">
-          <h3 className="text-sm font-medium text-slate-400 mb-2">クイック検索</h3>
+          <h3 className="text-sm font-medium text-[#9FA3A9] mb-3">クイック検索</h3>
           <div className="flex flex-wrap gap-2">
             {quickSearches.map((term) => (
               <button
                 key={term}
                 onClick={() => handleQuickSearch(term)}
-                className="px-3 py-1.5 rounded-lg bg-slate-800/60 border border-slate-700/50 text-slate-300 text-sm hover:bg-slate-700 hover:border-slate-600 transition-all"
+                className="px-4 py-2 rounded-xl bg-[#1F242B] border border-[#2A2A2A] text-[#9FA3A9] text-sm hover:border-[#B59A5A]/30 hover:text-[#E6E3DC] transition-all duration-300"
               >
                 {term}
               </button>
@@ -94,23 +100,23 @@ export default function SearchPage() {
         {loading && <LoadingSpinner />}
 
         {error && (
-          <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-sm">
+          <div className="p-4 rounded-xl bg-[#A65D57]/10 border border-[#A65D57]/30 text-[#D4847E] text-sm">
             エラー: {error}
           </div>
         )}
 
         {!loading && hasSearched && articles.length === 0 && !error && (
-          <div className="p-8 rounded-xl bg-slate-800/50 border border-slate-700/50 text-center">
-            <p className="text-slate-400">検索結果が見つかりませんでした</p>
+          <div className="p-8 rounded-xl bg-[#1F242B] border border-[#2A2A2A] text-center">
+            <p className="text-[#6B7280]">検索結果が見つかりませんでした</p>
           </div>
         )}
 
         {!hasSearched && !loading && (
-          <div className="p-8 rounded-xl bg-slate-800/50 border border-slate-700/50 text-center">
-            <svg className="w-12 h-12 mx-auto text-slate-600 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="p-8 rounded-xl bg-[#1F242B] border border-[#2A2A2A] text-center">
+            <svg className="w-12 h-12 mx-auto text-[#6B7280] mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
-            <p className="text-slate-400">キーワードを入力してニュースを検索</p>
+            <p className="text-[#6B7280]">キーワードを入力してニュースを検索</p>
           </div>
         )}
       </div>
