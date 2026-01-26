@@ -52,10 +52,14 @@ export default function HomePage() {
     }
   };
 
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
   const handleRefresh = async () => {
-    setTranslatedArticles([]);
+    setIsRefreshing(true);
     setSelectedCategory('すべて');
     await loadNews();
+    setTranslatedArticles([]);
+    setIsRefreshing(false);
   };
 
   const handleAnalyze = async (article) => {
@@ -73,7 +77,10 @@ export default function HomePage() {
     }
   };
 
-  const displayArticles = translatedArticles.length > 0 ? translatedArticles : articles;
+  // 更新中は既存の翻訳済み記事を表示し続ける
+  const displayArticles = translatedArticles.length > 0
+    ? translatedArticles
+    : (isRefreshing ? [] : articles);
 
   const filteredArticles = viewMode === 'category' && selectedCategory !== 'すべて'
     ? displayArticles.filter(a => a.category === selectedCategory)
@@ -170,15 +177,15 @@ export default function HomePage() {
         )}
 
         {/* ローディング */}
-        {(loading || isTranslating) && articles.length === 0 && <LoadingSpinner />}
+        {(loading || isTranslating) && displayArticles.length === 0 && <LoadingSpinner />}
 
-        {isTranslating && articles.length > 0 && (
+        {(loading || isTranslating) && displayArticles.length > 0 && (
           <div className="mx-4 mb-4 p-4 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 text-sm flex items-center gap-3">
             <svg className="w-5 h-5 animate-spin" viewBox="0 0 24 24" fill="none">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
             </svg>
-            {isCategorizing ? 'タイトル翻訳・カテゴリー分類中...' : 'タイトルを日本語に翻訳中...'}
+            {loading ? '最新ニュースを取得中...' : isCategorizing ? 'タイトル翻訳・カテゴリー分類中...' : 'タイトルを日本語に翻訳中...'}
           </div>
         )}
 
@@ -190,7 +197,7 @@ export default function HomePage() {
         )}
 
         {/* 記事なし */}
-        {!loading && articles.length === 0 && !error && (
+        {!loading && !isTranslating && displayArticles.length === 0 && !error && (
           <div className="mx-4 p-8 rounded-xl bg-slate-800 border border-slate-700 text-center">
             <p className="text-slate-400">ニュースが見つかりませんでした</p>
           </div>
