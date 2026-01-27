@@ -78,13 +78,6 @@ export default function FeaturedNewsCard({ article, onBookmark, isBookmarked, on
           {displayTitle}
         </h2>
 
-        {/* Description (when no analysis) */}
-        {article?.description && !analysis && (
-          <p className="text-[13px] text-[var(--text-muted)] leading-relaxed mb-6 line-clamp-2">
-            {article.description}
-          </p>
-        )}
-
         {/* AI Analysis Result */}
         {analysis && (
           <div className="mb-7 p-6 analysis-card">
@@ -114,10 +107,7 @@ export default function FeaturedNewsCard({ article, onBookmark, isBookmarked, on
           </div>
         )}
 
-        {/* Divider */}
-        <div className="divider mb-6" />
-
-        {/* Action Buttons */}
+        {/* Action Buttons - moved up, no divider */}
         <div className="flex items-center justify-end gap-4">
           <button
             onClick={(e) => {

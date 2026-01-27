@@ -48,9 +48,9 @@ export default function SettingsPage() {
           </p>
         </div>
 
-        <div className="space-y-8">
+        <div className="space-y-10">
           {/* About */}
-          <div className="p-6 neu-card">
+          <div className="p-7 neu-card">
             <h3 className="text-sm font-semibold text-[var(--text-heading)] mb-4 flex items-center gap-2">
               <svg className="w-4 h-4 text-[var(--accent-blue)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -68,7 +68,7 @@ export default function SettingsPage() {
           </div>
 
           {/* テーマ設定 */}
-          <div className="p-6 neu-card">
+          <div className="p-7 neu-card">
             <h3 className="text-sm font-semibold text-[var(--text-heading)] mb-5 flex items-center gap-2">
               <svg className="w-4 h-4 text-[var(--accent-blue)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
@@ -88,14 +88,14 @@ export default function SettingsPage() {
               <button
                 onClick={() => setIsDarkMode(!isDarkMode)}
                 className={`relative w-14 h-8 rounded-full transition-all duration-300 ${isDarkMode
-                    ? 'bg-[var(--accent-blue)]'
-                    : 'neu-inset'
+                  ? 'bg-[var(--accent-blue)]'
+                  : 'neu-inset'
                   }`}
               >
                 <span
                   className={`absolute top-1 w-6 h-6 rounded-full transition-all duration-300 ${isDarkMode
-                      ? 'left-7 bg-white shadow-lg'
-                      : 'left-1 bg-[var(--bg-primary)] neu-raised-sm'
+                    ? 'left-7 bg-white shadow-lg'
+                    : 'left-1 bg-[var(--bg-primary)] neu-raised-sm'
                     }`}
                 />
               </button>
@@ -103,7 +103,7 @@ export default function SettingsPage() {
           </div>
 
           {/* 文字サイズ設定 */}
-          <div className="p-6 neu-card">
+          <div className="p-7 neu-card">
             <h3 className="text-sm font-semibold text-[var(--text-heading)] mb-5 flex items-center gap-2">
               <svg className="w-4 h-4 text-[var(--accent-blue)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 6h16M4 12h16m-7 6h7" />
@@ -121,12 +121,12 @@ export default function SettingsPage() {
                   key={option.value}
                   onClick={() => setFontSize(option.value)}
                   className={`flex-1 py-4 rounded-xl transition-all duration-200 ${fontSize === option.value
-                      ? 'neu-inset text-[var(--accent-blue)]'
-                      : 'neu-raised-sm text-[var(--text-muted)] hover:text-[var(--text-body)]'
+                    ? 'neu-inset text-[var(--accent-blue)]'
+                    : 'neu-raised-sm text-[var(--text-muted)] hover:text-[var(--text-body)]'
                     }`}
                 >
                   <span className={`block font-bold ${option.value === 'small' ? 'text-sm' :
-                      option.value === 'medium' ? 'text-base' : 'text-lg'
+                    option.value === 'medium' ? 'text-base' : 'text-lg'
                     }`}>
                     {option.preview}
                   </span>
@@ -137,7 +137,7 @@ export default function SettingsPage() {
           </div>
 
           {/* Data Management */}
-          <div className="p-6 neu-card">
+          <div className="p-7 neu-card">
             <h3 className="text-sm font-semibold text-[var(--text-heading)] mb-5 flex items-center gap-2">
               <svg className="w-4 h-4 text-[var(--accent-blue)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" />
@@ -151,41 +151,6 @@ export default function SettingsPage() {
             >
               保存した記事をすべて削除
             </button>
-          </div>
-
-          {/* Links */}
-          <div className="p-6 neu-card">
-            <h3 className="text-sm font-semibold text-[var(--text-heading)] mb-5 flex items-center gap-2">
-              <svg className="w-4 h-4 text-[var(--accent-blue)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-              </svg>
-              リソース
-            </h3>
-
-            <div className="space-y-1">
-              <a
-                href="https://newsapi.org/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-between py-3.5 text-sm text-[var(--text-body)] hover:text-[var(--accent-blue)] transition-colors duration-200 border-b border-[var(--shadow-dark)]/20 group"
-              >
-                <span>News API 公式サイト</span>
-                <svg className="w-4 h-4 opacity-50 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                </svg>
-              </a>
-              <a
-                href="https://ai.google.dev/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-between py-3.5 text-sm text-[var(--text-body)] hover:text-[var(--accent-blue)] transition-colors duration-200 group"
-              >
-                <span>Google AI Studio (Gemini)</span>
-                <svg className="w-4 h-4 opacity-50 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                </svg>
-              </a>
-            </div>
           </div>
         </div>
       </div>
