@@ -1,10 +1,33 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import { useNews } from '../hooks/useNews';
 import { useBookmarks } from '../hooks/useBookmarks';
 import { analyzeNewsArticle, translateArticles, categorizeArticles, CATEGORIES } from '../services/geminiApi';
 import FeaturedNewsCard from '../components/FeaturedNewsCard';
 import NewsCard from '../components/NewsCard';
 import LoadingSpinner from '../components/LoadingSpinner';
+import ErrorBoundary from '../components/ErrorBoundary';
+import { SkeletonList, SkeletonCard } from '../components/SkeletonCard';
+
+// Safe wrapper for article card rendering
+function SafeNewsCard(props) {
+  try {
+    if (!props?.article) return null;
+    return <NewsCard {...props} />;
+  } catch (error) {
+    console.error('NewsCard render error:', error);
+    return null;
+  }
+}
+
+function SafeFeaturedNewsCard(props) {
+  try {
+    if (!props?.article) return null;
+    return <FeaturedNewsCard {...props} />;
+  } catch (error) {
+    console.error('FeaturedNewsCard render error:', error);
+    return null;
+  }
+}
 
 export default function HomePage() {
   const { articles, loading, error, loadNews } = useNews();
@@ -17,111 +40,144 @@ export default function HomePage() {
   const [isCategorizing, setIsCategorizing] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('すべて');
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
 
   useEffect(() => {
     loadNews();
   }, [loadNews]);
 
   useEffect(() => {
-    if (articles.length > 0 && translatedArticles.length === 0) {
+    if (articles?.length > 0 && translatedArticles?.length === 0) {
       handleTranslateAndCategorize();
     }
   }, [articles]);
 
   const handleTranslateAndCategorize = async () => {
-    if (articles.length === 0 || isTranslating) return;
+    if (!articles?.length || isTranslating) return;
     setIsTranslating(true);
     setIsCategorizing(true);
+    setIsUpdating(true);
     try {
       const [translated, categorized] = await Promise.all([
         translateArticles(articles),
         categorizeArticles(articles),
       ]);
 
-      const merged = translated.map((article, index) => ({
+      const merged = (translated || []).map((article, index) => ({
         ...article,
-        category: categorized[index]?.category || 'その他',
+        category: categorized?.[index]?.category || 'その他',
       }));
 
       setTranslatedArticles(merged);
     } catch (err) {
       console.error('Processing failed:', err);
-      setTranslatedArticles(articles);
+      // Fallback to original articles on error
+      setTranslatedArticles(articles || []);
     } finally {
       setIsTranslating(false);
       setIsCategorizing(false);
+      setIsUpdating(false);
     }
   };
 
-  const handleRefresh = async () => {
+  const handleRefresh = useCallback(async () => {
     setIsRefreshing(true);
+    setIsUpdating(true);
     setSelectedCategory('すべて');
-    await loadNews();
-    setTranslatedArticles([]);
-    setIsRefreshing(false);
-  };
+    try {
+      await loadNews();
+      setTranslatedArticles([]);
+    } catch (err) {
+      console.error('Refresh failed:', err);
+    } finally {
+      setIsRefreshing(false);
+      // isUpdating will be set to false when translation completes
+    }
+  }, [loadNews]);
 
-  const handleAnalyze = async (article) => {
+  const handleAnalyze = useCallback(async (article) => {
+    if (!article?.url) return;
     const articleId = article.url;
     if (analyses[articleId]) return;
 
     setAnalyzingId(articleId);
     try {
       const analysis = await analyzeNewsArticle(article);
-      setAnalyses((prev) => ({ ...prev, [articleId]: analysis }));
+      if (analysis) {
+        setAnalyses((prev) => ({ ...prev, [articleId]: analysis }));
+      }
     } catch (err) {
       console.error('Analysis failed:', err);
     } finally {
       setAnalyzingId(null);
     }
-  };
+  }, [analyses]);
 
-  // 更新中は既存の翻訳済み記事を表示し続ける
-  const displayArticles = translatedArticles.length > 0
-    ? translatedArticles
-    : (isRefreshing ? [] : articles);
+  // Safe display articles with fallback
+  const displayArticles = useMemo(() => {
+    if (translatedArticles?.length > 0) {
+      return translatedArticles;
+    }
+    if (isRefreshing || isUpdating) {
+      return [];
+    }
+    return articles || [];
+  }, [translatedArticles, isRefreshing, isUpdating, articles]);
 
-  const filteredArticles = viewMode === 'category' && selectedCategory !== 'すべて'
-    ? displayArticles.filter(a => a.category === selectedCategory)
-    : displayArticles;
+  const filteredArticles = useMemo(() => {
+    if (!displayArticles?.length) return [];
+    if (viewMode === 'category' && selectedCategory !== 'すべて') {
+      return displayArticles.filter(a => a?.category === selectedCategory);
+    }
+    return displayArticles;
+  }, [displayArticles, viewMode, selectedCategory]);
 
-  const groupedByCategory = CATEGORIES.reduce((acc, cat) => {
-    acc[cat] = displayArticles.filter(a => a.category === cat);
-    return acc;
-  }, {});
+  const groupedByCategory = useMemo(() => {
+    if (!CATEGORIES || !displayArticles?.length) return {};
+    return CATEGORIES.reduce((acc, cat) => {
+      acc[cat] = displayArticles.filter(a => a?.category === cat);
+      return acc;
+    }, {});
+  }, [displayArticles]);
 
-  const categoryCounts = CATEGORIES.reduce((acc, cat) => {
-    acc[cat] = displayArticles.filter(a => a.category === cat).length;
-    return acc;
-  }, {});
+  const categoryCounts = useMemo(() => {
+    if (!CATEGORIES || !displayArticles?.length) return {};
+    return CATEGORIES.reduce((acc, cat) => {
+      acc[cat] = displayArticles.filter(a => a?.category === cat).length;
+      return acc;
+    }, {});
+  }, [displayArticles]);
 
-  const featuredArticle = viewMode === 'timeline' ? filteredArticles[0] : null;
-  const otherArticles = viewMode === 'timeline' ? filteredArticles.slice(1) : filteredArticles;
+  const featuredArticle = viewMode === 'timeline' && filteredArticles?.length > 0 ? filteredArticles[0] : null;
+  const otherArticles = viewMode === 'timeline' && filteredArticles?.length > 1 ? filteredArticles.slice(1) : (viewMode === 'timeline' ? [] : filteredArticles);
+
+  // Show skeleton during initial load or refresh
+  const showSkeleton = (loading || isTranslating || isUpdating) && displayArticles?.length === 0;
 
   return (
     <div className="flex-1 pb-24 bg-[#141414]">
-      <div className="py-5">
+      <div className="py-6">
         {/* ヘッダー */}
-        <div className="flex items-center justify-between px-5 mb-5">
+        <div className="flex items-center justify-between px-5 mb-6">
           <div>
             <h2 className="text-xl font-bold text-[#E6E3DC] tracking-wide" style={{fontFamily: 'Georgia, serif'}}>Latest News</h2>
-            <p className="text-xs text-[#6B7280] mt-0.5 tracking-wider">最新ニュース</p>
+            <p className="text-xs text-[#6B7280] mt-1 tracking-wider">最新ニュース</p>
           </div>
           <button
             onClick={handleRefresh}
-            disabled={loading || isTranslating}
+            disabled={loading || isTranslating || isUpdating}
             className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#1F242B] border border-[#2A2A2A] text-[#B59A5A] text-sm font-medium hover:border-[#B59A5A]/30 transition-all duration-300 disabled:opacity-50"
           >
-            <svg className={`w-4 h-4 ${loading || isTranslating ? 'animate-spin' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className={`w-4 h-4 ${loading || isTranslating || isUpdating ? 'animate-spin' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
             </svg>
-            {isTranslating ? '処理中' : '更新'}
+            {isTranslating || isUpdating ? '処理中' : '更新'}
           </button>
         </div>
 
         {/* 表示モード切り替え */}
-        <div className="px-5 mb-5">
-          <div className="flex gap-3 p-1 bg-[#1C1B1A] rounded-xl border border-[#2A2A2A]">
+        <div className="px-5 mb-6">
+          <div className="flex gap-3 p-1.5 bg-[#1C1B1A] rounded-xl border border-[#2A2A2A]">
             <button
               onClick={() => setViewMode('timeline')}
               className={`flex-1 py-3 px-6 rounded-lg text-sm font-medium transition-all duration-300 ${
@@ -147,7 +203,7 @@ export default function HomePage() {
 
         {/* カテゴリータブ */}
         {viewMode === 'category' && (
-          <div className="px-5 mb-5">
+          <div className="px-5 mb-6">
             <div className="flex flex-wrap gap-2">
               <button
                 onClick={() => setSelectedCategory('すべて')}
@@ -157,10 +213,10 @@ export default function HomePage() {
                     : 'bg-[#1F242B] border-[#2A2A2A] text-[#9FA3A9] hover:border-[#B59A5A]/30 hover:text-[#E6E3DC]'
                 }`}
               >
-                すべて ({displayArticles.length})
+                すべて ({displayArticles?.length || 0})
               </button>
-              {CATEGORIES.map(cat => (
-                categoryCounts[cat] > 0 && (
+              {CATEGORIES?.map(cat => (
+                (categoryCounts?.[cat] || 0) > 0 && (
                   <button
                     key={cat}
                     onClick={() => setSelectedCategory(cat)}
@@ -178,10 +234,13 @@ export default function HomePage() {
           </div>
         )}
 
-        {/* ローディング */}
-        {(loading || isTranslating) && displayArticles.length === 0 && <LoadingSpinner />}
+        {/* スケルトンローダー（初回ロード・リフレッシュ時） */}
+        {showSkeleton && (
+          <SkeletonList count={4} showFeatured={viewMode === 'timeline'} />
+        )}
 
-        {(loading || isTranslating) && displayArticles.length > 0 && (
+        {/* 更新中バナー（既存記事表示中） */}
+        {(loading || isTranslating || isUpdating) && displayArticles?.length > 0 && (
           <div className="mx-5 mb-5 p-4 rounded-xl bg-[#1F242B] border border-[#B59A5A]/20 text-[#9FA3A9] text-sm flex items-center gap-3">
             <svg className="w-5 h-5 text-[#B59A5A] animate-spin" viewBox="0 0 24 24" fill="none">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
@@ -193,87 +252,97 @@ export default function HomePage() {
 
         {/* エラー */}
         {error && (
-          <div className="mx-5 p-4 rounded-xl bg-[#A65D57]/10 border border-[#A65D57]/30 text-[#D4847E] text-sm">
+          <div className="mx-5 mb-5 p-4 rounded-xl bg-[#A65D57]/10 border border-[#A65D57]/30 text-[#D4847E] text-sm">
             エラー: {error}
           </div>
         )}
 
         {/* 記事なし */}
-        {!loading && !isTranslating && displayArticles.length === 0 && !error && (
+        {!loading && !isTranslating && !isUpdating && displayArticles?.length === 0 && !error && (
           <div className="mx-5 p-8 rounded-xl bg-[#1F242B] border border-[#2A2A2A] text-center">
             <p className="text-[#6B7280]">ニュースが見つかりませんでした</p>
           </div>
         )}
 
         {/* 時系列モード */}
-        {viewMode === 'timeline' && (
-          <>
-            {featuredArticle && (
-              <FeaturedNewsCard
-                article={featuredArticle}
-                onBookmark={toggleBookmark}
-                isBookmarked={isBookmarked(featuredArticle.url)}
-                onAnalyze={handleAnalyze}
-                analysis={analyses[featuredArticle.url]}
-                isAnalyzing={analyzingId === featuredArticle.url}
-              />
-            )}
-
-            <div className="mt-2">
-              {otherArticles.map((article) => (
-                <NewsCard
-                  key={article.url}
-                  article={article}
+        {!showSkeleton && viewMode === 'timeline' && (
+          <ErrorBoundary>
+            <>
+              {featuredArticle && (
+                <SafeFeaturedNewsCard
+                  article={featuredArticle}
                   onBookmark={toggleBookmark}
-                  isBookmarked={isBookmarked(article.url)}
+                  isBookmarked={isBookmarked(featuredArticle?.url)}
                   onAnalyze={handleAnalyze}
-                  analysis={analyses[article.url]}
-                  isAnalyzing={analyzingId === article.url}
+                  analysis={analyses?.[featuredArticle?.url]}
+                  isAnalyzing={analyzingId === featuredArticle?.url}
                 />
-              ))}
-            </div>
-          </>
+              )}
+
+              <div className="mt-3">
+                {otherArticles?.map((article) => (
+                  article?.url && (
+                    <SafeNewsCard
+                      key={article.url}
+                      article={article}
+                      onBookmark={toggleBookmark}
+                      isBookmarked={isBookmarked(article?.url)}
+                      onAnalyze={handleAnalyze}
+                      analysis={analyses?.[article?.url]}
+                      isAnalyzing={analyzingId === article?.url}
+                    />
+                  )
+                ))}
+              </div>
+            </>
+          </ErrorBoundary>
         )}
 
         {/* カテゴリーモード */}
-        {viewMode === 'category' && (
-          <div className="mt-2">
-            {selectedCategory === 'すべて' ? (
-              CATEGORIES.map(cat => (
-                groupedByCategory[cat]?.length > 0 && (
-                  <div key={cat} className="mb-6">
-                    <div className="px-5 mb-3 flex items-center gap-2">
-                      <h3 className="text-base font-bold text-[#E6E3DC]" style={{fontFamily: 'Georgia, serif'}}>{cat}</h3>
-                      <span className="text-sm text-[#6B7280]">({groupedByCategory[cat].length}件)</span>
+        {!showSkeleton && viewMode === 'category' && (
+          <ErrorBoundary>
+            <div className="mt-3">
+              {selectedCategory === 'すべて' ? (
+                CATEGORIES?.map(cat => (
+                  groupedByCategory?.[cat]?.length > 0 && (
+                    <div key={cat} className="mb-8">
+                      <div className="px-5 mb-4 flex items-center gap-2">
+                        <h3 className="text-base font-bold text-[#E6E3DC]" style={{fontFamily: 'Georgia, serif'}}>{cat}</h3>
+                        <span className="text-sm text-[#6B7280]">({groupedByCategory[cat]?.length || 0}件)</span>
+                      </div>
+                      {groupedByCategory[cat]?.map((article) => (
+                        article?.url && (
+                          <SafeNewsCard
+                            key={article.url}
+                            article={article}
+                            onBookmark={toggleBookmark}
+                            isBookmarked={isBookmarked(article?.url)}
+                            onAnalyze={handleAnalyze}
+                            analysis={analyses?.[article?.url]}
+                            isAnalyzing={analyzingId === article?.url}
+                          />
+                        )
+                      ))}
                     </div>
-                    {groupedByCategory[cat].map((article) => (
-                      <NewsCard
-                        key={article.url}
-                        article={article}
-                        onBookmark={toggleBookmark}
-                        isBookmarked={isBookmarked(article.url)}
-                        onAnalyze={handleAnalyze}
-                        analysis={analyses[article.url]}
-                        isAnalyzing={analyzingId === article.url}
-                      />
-                    ))}
-                  </div>
-                )
-              ))
-            ) : (
-              filteredArticles.map((article) => (
-                <NewsCard
-                  key={article.url}
-                  article={article}
-                  onBookmark={toggleBookmark}
-                  isBookmarked={isBookmarked(article.url)}
-                  onAnalyze={handleAnalyze}
-                  analysis={analyses[article.url]}
-                  isAnalyzing={analyzingId === article.url}
-                />
-              ))
-            )}
-          </div>
+                  )
+                ))
+              ) : (
+                filteredArticles?.map((article) => (
+                  article?.url && (
+                    <SafeNewsCard
+                      key={article.url}
+                      article={article}
+                      onBookmark={toggleBookmark}
+                      isBookmarked={isBookmarked(article?.url)}
+                      onAnalyze={handleAnalyze}
+                      analysis={analyses?.[article?.url]}
+                      isAnalyzing={analyzingId === article?.url}
+                    />
+                  )
+                ))
+              )}
+            </div>
+          </ErrorBoundary>
         )}
       </div>
     </div>

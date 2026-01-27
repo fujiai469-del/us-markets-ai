@@ -5,6 +5,7 @@ import HomePage from './pages/HomePage';
 import SearchPage from './pages/SearchPage';
 import BookmarksPage from './pages/BookmarksPage';
 import SettingsPage from './pages/SettingsPage';
+import ErrorBoundary from './components/ErrorBoundary';
 
 function App() {
   const [activeTab, setActiveTab] = useState('home');
@@ -25,10 +26,12 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0f172a]">
+    <div className="min-h-screen bg-[#141414] flex flex-col">
       <Header />
-      <main className="flex-1 overflow-y-auto">
-        {renderPage()}
+      <main className="flex-1 overflow-y-auto pt-2">
+        <ErrorBoundary>
+          {renderPage()}
+        </ErrorBoundary>
       </main>
       <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
     </div>
