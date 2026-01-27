@@ -28,10 +28,19 @@ export default function HomePage({ refreshTrigger, onRefreshingChange }) {
         categorizeArticles(articles),
       ]);
 
-      const merged = (translated || []).map((article, index) => ({
-        ...article,
-        category: categorized?.[index]?.category || 'その他',
-      }));
+      // Safely merge translated and categorized articles
+      const merged = (translated || []).map((article, index) => {
+        // Ensure category is always a string
+        let category = 'その他';
+        if (categorized?.[index]?.category) {
+          const cat = categorized[index].category;
+          category = typeof cat === 'string' ? cat : 'その他';
+        }
+        return {
+          ...article,
+          category,
+        };
+      });
 
       setTranslatedArticles(merged);
     } catch (err) {

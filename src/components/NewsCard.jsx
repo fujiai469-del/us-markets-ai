@@ -96,7 +96,7 @@ export default function NewsCard({ article, onBookmark, isBookmarked, onAnalyze,
           </h3>
 
           {/* Category */}
-          {article?.category && (
+          {article?.category && typeof article.category === 'string' && (
             <span className="mt-5 text-[10px] font-medium text-[var(--text-muted)] bg-[var(--bg-secondary)] py-2 px-4 rounded-lg self-start">
               {article.category}
             </span>
