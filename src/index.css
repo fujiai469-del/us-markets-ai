@@ -100,14 +100,14 @@ body {
 
 /* Card list spacing - for news card lists */
 .card-list>*+* {
-  margin-top: 40px;
-  /* Generous spacing between cards */
+  margin-top: 32px;
+  /* Balanced spacing between cards */
 }
 
 @media (min-width: 640px) {
   .card-list>*+* {
-    margin-top: 48px;
-    /* Even more breathing room on larger screens */
+    margin-top: 40px;
+    /* Slightly more on larger screens */
   }
 }
 

@@ -136,15 +136,7 @@ export default function SearchPage() {
           </div>
         )}
 
-        {!hasSearched && !loading && (
-          <div className="p-12 neu-card text-center">
-            <svg className="w-14 h-14 mx-auto text-[var(--text-light)] mb-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-            <p className="text-lg text-[var(--text-body)] mb-3">ニュースを検索</p>
-            <p className="text-sm text-[var(--text-muted)]">キーワードを入力するか、人気の検索ワードを選択</p>
-          </div>
-        )}
+        {/* Initial state - removed the large card, just show the form and quick search */}
 
         {/* Search Results */}
         <ErrorBoundary>

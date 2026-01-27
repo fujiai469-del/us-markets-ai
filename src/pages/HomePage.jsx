@@ -7,7 +7,7 @@ import NewsCard from '../components/NewsCard';
 import ErrorBoundary from '../components/ErrorBoundary';
 import { SkeletonList } from '../components/SkeletonCard';
 
-export default function HomePage() {
+export default function HomePage({ refreshTrigger, onRefreshingChange }) {
   const { articles, loading, error, loadNews } = useNews();
   const { toggleBookmark, isBookmarked } = useBookmarks();
   const [analyses, setAnalyses] = useState({});
@@ -17,11 +17,18 @@ export default function HomePage() {
   const [viewMode, setViewMode] = useState('timeline');
   const [isCategorizing, setIsCategorizing] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('すべて');
-  const [isRefreshing, setIsRefreshing] = useState(false);
 
+  // Initial load
   useEffect(() => {
     loadNews();
   }, [loadNews]);
+
+  // Handle refresh trigger from header
+  useEffect(() => {
+    if (refreshTrigger > 0) {
+      handleRefresh();
+    }
+  }, [refreshTrigger]);
 
   useEffect(() => {
     if (articles?.length > 0 && translatedArticles?.length === 0) {
@@ -55,11 +62,11 @@ export default function HomePage() {
   };
 
   const handleRefresh = async () => {
-    setIsRefreshing(true);
+    if (onRefreshingChange) onRefreshingChange(true);
     setSelectedCategory('すべて');
     await loadNews();
     setTranslatedArticles([]);
-    setIsRefreshing(false);
+    if (onRefreshingChange) onRefreshingChange(false);
   };
 
   const handleAnalyze = async (article) => {
@@ -108,25 +115,13 @@ export default function HomePage() {
       {/* Main container with generous padding and breathing room */}
       <div className="main-container">
         {/* Section Header */}
-        <div className="flex items-center justify-between mb-12 pt-4">
-          <div>
-            <h2 className="text-xl font-bold text-[var(--text-heading)]">
-              本日のニュース
-            </h2>
-            <p className="text-xs text-[var(--text-muted)] mt-1.5">
-              最新のマーケット情報
-            </p>
-          </div>
-          <button
-            onClick={handleRefresh}
-            disabled={loading || isTranslating}
-            className="btn-neu btn-neu-sm flex items-center gap-2"
-          >
-            <svg className={`w-4 h-4 ${loading || isTranslating ? 'animate-spin' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-            </svg>
-            {isTranslating ? '処理中...' : '更新'}
-          </button>
+        <div className="mb-12 pt-4">
+          <h2 className="text-xl font-bold text-[var(--text-heading)]">
+            本日のニュース
+          </h2>
+          <p className="text-xs text-[var(--text-muted)] mt-1.5">
+            最新のマーケット情報
+          </p>
         </div>
 
         {/* View Mode Toggle - Neumorphic Tab */}
@@ -205,16 +200,18 @@ export default function HomePage() {
         {/* Timeline Mode */}
         <ErrorBoundary>
           {viewMode === 'timeline' && !showSkeleton && (
-            <div className="space-y-8">
+            <div className="space-y-10">
               {featuredArticle && (
-                <FeaturedNewsCard
-                  article={featuredArticle}
-                  onBookmark={toggleBookmark}
-                  isBookmarked={isBookmarked(featuredArticle?.url)}
-                  onAnalyze={handleAnalyze}
-                  analysis={analyses[featuredArticle?.url]}
-                  isAnalyzing={analyzingId === featuredArticle?.url}
-                />
+                <div className="mb-8">
+                  <FeaturedNewsCard
+                    article={featuredArticle}
+                    onBookmark={toggleBookmark}
+                    isBookmarked={isBookmarked(featuredArticle?.url)}
+                    onAnalyze={handleAnalyze}
+                    analysis={analyses[featuredArticle?.url]}
+                    isAnalyzing={analyzingId === featuredArticle?.url}
+                  />
+                </div>
               )}
 
               <div className="card-list">
