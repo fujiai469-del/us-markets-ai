@@ -3,17 +3,18 @@ import { useNews } from '../hooks/useNews';
 import { useBookmarks } from '../hooks/useBookmarks';
 import { analyzeNewsArticle } from '../services/geminiApi';
 import NewsCard from '../components/NewsCard';
-import LoadingSpinner from '../components/LoadingSpinner';
+import ErrorBoundary from '../components/ErrorBoundary';
+import { SkeletonList } from '../components/SkeletonCard';
 
 const quickSearches = [
-  'アップル',
-  'テスラ',
-  'エヌビディア',
-  'マイクロソフト',
-  'アマゾン',
-  'FRB 金利',
-  'インフレ',
-  '決算発表',
+  'Apple',
+  'Tesla',
+  'NVIDIA',
+  'Microsoft',
+  'Amazon',
+  'Fed',
+  'S&P 500',
+  'Earnings',
 ];
 
 export default function SearchPage() {
@@ -39,6 +40,7 @@ export default function SearchPage() {
   };
 
   const handleAnalyze = async (article) => {
+    if (!article?.url) return;
     const articleId = article.url;
     if (analyses[articleId]) return;
 
@@ -54,42 +56,61 @@ export default function SearchPage() {
   };
 
   return (
-    <div className="flex-1 pb-24 bg-[#141414]">
-      <div className="py-5 px-5">
-        {/* ヘッダー */}
-        <div className="mb-5">
-          <h2 className="text-xl font-bold text-[#E6E3DC] tracking-wide" style={{fontFamily: 'Georgia, serif'}}>Search News</h2>
-          <p className="text-xs text-[#6B7280] mt-0.5 tracking-wider">ニュース検索</p>
+    <div className="flex-1 pt-8" style={{ paddingBottom: '180px' }}>
+      <div className="main-container">
+        {/* Section Header */}
+        <div className="mb-12 pt-4">
+          <h2 className="text-xl font-bold text-[var(--text-heading)]">
+            ニュース検索
+          </h2>
+          <p className="text-xs text-[var(--text-muted)] mt-1.5">
+            キーワードで記事を探す
+          </p>
         </div>
 
-        <form onSubmit={handleSearch} className="mb-5">
+        {/* Search Form */}
+        <form onSubmit={handleSearch} className="mb-12">
           <div className="relative">
             <input
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="キーワードを入力..."
-              className="w-full py-3.5 pl-12 pr-4 rounded-xl bg-[#1F242B] border border-[#2A2A2A] text-[#E6E3DC] placeholder-[#6B7280] focus:outline-none focus:border-[#B59A5A]/50 focus:ring-1 focus:ring-[#B59A5A]/30 transition-all"
+              placeholder="検索キーワードを入力..."
+              className="input-neu w-full py-4 pl-12 pr-4"
             />
             <svg
-              className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#6B7280]"
+              className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--text-light)]"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
             >
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
+            {query && (
+              <button
+                type="button"
+                onClick={() => setQuery('')}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--text-light)] hover:text-[var(--text-muted)] transition-colors"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            )}
           </div>
         </form>
 
-        <div className="mb-6">
-          <h3 className="text-sm font-medium text-[#9FA3A9] mb-3">クイック検索</h3>
-          <div className="flex flex-wrap gap-2">
+        {/* Quick Search */}
+        <div className="mb-12">
+          <h3 className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wide mb-5">
+            人気の検索ワード
+          </h3>
+          <div className="flex flex-wrap gap-4">
             {quickSearches.map((term) => (
               <button
                 key={term}
                 onClick={() => handleQuickSearch(term)}
-                className="px-4 py-2 rounded-xl bg-[#1F242B] border border-[#2A2A2A] text-[#9FA3A9] text-sm hover:border-[#B59A5A]/30 hover:text-[#E6E3DC] transition-all duration-300"
+                className={`chip-neu ${query === term ? 'active' : ''}`}
               >
                 {term}
               </button>
@@ -97,42 +118,63 @@ export default function SearchPage() {
           </div>
         </div>
 
-        {loading && <LoadingSpinner />}
+        {loading && <SkeletonList count={3} showFeatured={false} />}
 
         {error && (
-          <div className="p-4 rounded-xl bg-[#A65D57]/10 border border-[#A65D57]/30 text-[#D4847E] text-sm">
+          <div className="p-5 rounded-xl bg-red-50 border border-red-200 text-red-600 text-sm mb-6">
             エラー: {error}
           </div>
         )}
 
-        {!loading && hasSearched && articles.length === 0 && !error && (
-          <div className="p-8 rounded-xl bg-[#1F242B] border border-[#2A2A2A] text-center">
-            <p className="text-[#6B7280]">検索結果が見つかりませんでした</p>
+        {!loading && hasSearched && (!articles || articles.length === 0) && !error && (
+          <div className="p-12 neu-card text-center animate-fadeIn">
+            <svg className="w-12 h-12 mx-auto text-[var(--text-light)] mb-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <p className="text-[var(--text-body)]">検索結果が見つかりませんでした</p>
+            <p className="text-xs text-[var(--text-muted)] mt-2">別のキーワードをお試しください</p>
           </div>
         )}
 
         {!hasSearched && !loading && (
-          <div className="p-8 rounded-xl bg-[#1F242B] border border-[#2A2A2A] text-center">
-            <svg className="w-12 h-12 mx-auto text-[#6B7280] mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          <div className="p-12 neu-card text-center">
+            <svg className="w-14 h-14 mx-auto text-[var(--text-light)] mb-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
-            <p className="text-[#6B7280]">キーワードを入力してニュースを検索</p>
+            <p className="text-lg text-[var(--text-body)] mb-3">ニュースを検索</p>
+            <p className="text-sm text-[var(--text-muted)]">キーワードを入力するか、人気の検索ワードを選択</p>
           </div>
         )}
-      </div>
 
-      <div>
-        {articles.map((article) => (
-          <NewsCard
-            key={article.url}
-            article={article}
-            onBookmark={toggleBookmark}
-            isBookmarked={isBookmarked(article.url)}
-            onAnalyze={handleAnalyze}
-            analysis={analyses[article.url]}
-            isAnalyzing={analyzingId === article.url}
-          />
-        ))}
+        {/* Search Results */}
+        <ErrorBoundary>
+          {hasSearched && !loading && articles?.length > 0 && (
+            <div className="animate-fadeIn">
+              <div className="mb-6 flex items-center gap-3">
+                <span className="text-xs font-bold text-[var(--text-muted)]">
+                  {articles.length}件の結果
+                </span>
+                <div className="flex-1 h-px bg-gradient-to-r from-[var(--shadow-dark)] to-transparent" />
+              </div>
+              <div className="space-y-6">
+                {(articles || []).map((article, index) => (
+                  article?.url ? (
+                    <div key={article.url} className="animate-fadeIn" style={{ animationDelay: `${index * 50}ms` }}>
+                      <NewsCard
+                        article={article}
+                        onBookmark={toggleBookmark}
+                        isBookmarked={isBookmarked(article?.url)}
+                        onAnalyze={handleAnalyze}
+                        analysis={analyses[article?.url]}
+                        isAnalyzing={analyzingId === article?.url}
+                      />
+                    </div>
+                  ) : null
+                ))}
+              </div>
+            </div>
+          )}
+        </ErrorBoundary>
       </div>
     </div>
   );

@@ -1,19 +1,20 @@
 export default function LoadingSpinner() {
   return (
-    <div className="flex flex-col items-center justify-center py-12">
-      <div className="relative w-14 h-14">
-        {/* 外側のリング */}
-        <div className="absolute inset-0 rounded-full border-2 border-[#2A2A2A]"></div>
-        {/* ゴールドのスピナー */}
-        <div className="absolute inset-0 rounded-full border-2 border-transparent border-t-[#B59A5A] animate-spin"></div>
-        {/* 内側のダークゴールドスピナー */}
-        <div className="absolute inset-2 rounded-full border-2 border-transparent border-t-[#9C8450] animate-spin" style={{ animationDuration: '0.8s', animationDirection: 'reverse' }}></div>
-        {/* 中央のドット */}
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="w-2 h-2 rounded-full bg-[#B59A5A]/50"></div>
+    <div className="flex flex-col items-center justify-center py-20">
+      {/* Neumorphic Spinner */}
+      <div className="relative">
+        <div className="w-16 h-16 neu-raised rounded-full flex items-center justify-center">
+          <div className="w-10 h-10 rounded-full border-3 border-[#c8d0e7] border-t-[#3b82f6] animate-spin" />
         </div>
       </div>
-      <p className="mt-4 text-sm text-[#9FA3A9] tracking-wide">読み込み中...</p>
+
+      {/* Text */}
+      <p className="mt-6 text-sm font-medium text-[#4a5568]">
+        Loading...
+      </p>
+      <p className="mt-1 text-xs text-[#718096]">
+        Please wait
+      </p>
     </div>
   );
 }
