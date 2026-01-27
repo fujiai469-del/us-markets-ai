@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
+import { AuthProvider } from './context/AuthContext';
 import Header from './components/Header';
 import BottomNav from './components/BottomNav';
 import HomePage from './pages/HomePage';
@@ -62,18 +63,20 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen">
-      <Header
-        onRefresh={activeTab === 'home' ? handleRefresh : null}
-        isLoading={isRefreshing}
-      />
-      <main className="flex-1 overflow-y-auto pt-2">
-        <ErrorBoundary>
-          {renderPage()}
-        </ErrorBoundary>
-      </main>
-      <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
-    </div>
+    <AuthProvider>
+      <div className="min-h-screen">
+        <Header
+          onRefresh={activeTab === 'home' ? handleRefresh : null}
+          isLoading={isRefreshing}
+        />
+        <main className="flex-1 overflow-y-auto pt-2">
+          <ErrorBoundary>
+            {renderPage()}
+          </ErrorBoundary>
+        </main>
+        <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
+      </div>
+    </AuthProvider>
   );
 }
 

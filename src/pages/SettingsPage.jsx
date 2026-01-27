@@ -39,25 +39,25 @@ export default function SettingsPage() {
     <div className="flex-1 pt-8" style={{ paddingBottom: '180px' }}>
       <div className="main-container">
         {/* Section Header */}
-        <div className="mb-12 pt-4">
+        <div className="mb-16 pt-6">
           <h2 className="text-xl font-bold text-[var(--text-heading)]">
             設定
           </h2>
-          <p className="text-xs text-[var(--text-muted)] mt-1.5">
+          <p className="text-xs text-[var(--text-muted)] mt-2">
             アプリの設定をカスタマイズ
           </p>
         </div>
 
-        <div className="space-y-16">
+        <div className="space-y-20">
           {/* About */}
-          <div className="p-7 neu-card">
-            <h3 className="text-sm font-semibold text-[var(--text-heading)] mb-4 flex items-center gap-2">
+          <div className="p-8 neu-card">
+            <h3 className="text-sm font-semibold text-[var(--text-heading)] mb-5 flex items-center gap-2">
               <svg className="w-4 h-4 text-[var(--accent-blue)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               このアプリについて
             </h3>
-            <p className="text-sm text-[var(--text-body)] mb-4 leading-relaxed">
+            <p className="text-sm text-[var(--text-body)] mb-5 leading-relaxed">
               US Markets AI は、AI を活用した米国マーケットニュースの分析・翻訳アプリです。
             </p>
             <div className="flex items-center gap-4 text-xs text-[var(--text-muted)]">
@@ -68,8 +68,8 @@ export default function SettingsPage() {
           </div>
 
           {/* テーマ設定 */}
-          <div className="p-7 neu-card">
-            <h3 className="text-sm font-semibold text-[var(--text-heading)] mb-5 flex items-center gap-2">
+          <div className="p-8 neu-card">
+            <h3 className="text-sm font-semibold text-[var(--text-heading)] mb-6 flex items-center gap-2">
               <svg className="w-4 h-4 text-[var(--accent-blue)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
               </svg>
@@ -81,7 +81,7 @@ export default function SettingsPage() {
                 <span className="text-sm text-[var(--text-body)]">
                   {isDarkMode ? 'ダークモード' : 'ライトモード'}
                 </span>
-                <p className="text-xs text-[var(--text-muted)] mt-1">
+                <p className="text-xs text-[var(--text-muted)] mt-1.5">
                   画面の明るさを切り替えます
                 </p>
               </div>
@@ -103,15 +103,15 @@ export default function SettingsPage() {
           </div>
 
           {/* 文字サイズ設定 */}
-          <div className="p-7 neu-card">
-            <h3 className="text-sm font-semibold text-[var(--text-heading)] mb-5 flex items-center gap-2">
+          <div className="p-8 neu-card">
+            <h3 className="text-sm font-semibold text-[var(--text-heading)] mb-6 flex items-center gap-2">
               <svg className="w-4 h-4 text-[var(--accent-blue)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 6h16M4 12h16m-7 6h7" />
               </svg>
               文字サイズ
             </h3>
 
-            <div className="flex gap-3">
+            <div className="flex gap-4">
               {[
                 { value: 'small', label: '小', preview: 'A' },
                 { value: 'medium', label: '中', preview: 'A' },
@@ -137,8 +137,8 @@ export default function SettingsPage() {
           </div>
 
           {/* Data Management */}
-          <div className="p-7 neu-card">
-            <h3 className="text-sm font-semibold text-[var(--text-heading)] mb-5 flex items-center gap-2">
+          <div className="p-8 neu-card">
+            <h3 className="text-sm font-semibold text-[var(--text-heading)] mb-6 flex items-center gap-2">
               <svg className="w-4 h-4 text-[var(--accent-blue)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" />
               </svg>
