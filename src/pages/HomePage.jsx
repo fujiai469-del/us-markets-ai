@@ -87,7 +87,7 @@ export default function HomePage({ refreshTrigger, onRefreshingChange }) {
   // Safe access to articles with fallbacks
   const displayArticles = translatedArticles?.length > 0
     ? translatedArticles
-    : (isRefreshing ? [] : (articles || []));
+    : (articles || []);
 
   const filteredArticles = viewMode === 'category' && selectedCategory !== 'すべて'
     ? (displayArticles || []).filter(a => a?.category === selectedCategory)
