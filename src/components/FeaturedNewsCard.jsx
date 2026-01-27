@@ -127,7 +127,7 @@ export default function FeaturedNewsCard({ article, onBookmark, isBookmarked, on
             ) : analysis ? (
               '分析済み'
             ) : (
-              'AIで分析'
+              'AI分析'
             )}
           </button>
 
