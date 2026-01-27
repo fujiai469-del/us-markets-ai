@@ -217,7 +217,7 @@ export default function HomePage() {
                 />
               )}
 
-              <div className="space-y-8">
+              <div className="card-list">
                 {(otherArticles || []).map((article, index) => (
                   article?.url ? (
                     <div key={article.url} className="animate-fadeIn" style={{ animationDelay: `${index * 50}ms` }}>
@@ -250,7 +250,7 @@ export default function HomePage() {
                         <div className="flex-1 h-px bg-gradient-to-r from-[var(--shadow-dark)] to-transparent" />
                         <span className="text-xs text-[var(--text-muted)]">({groupedByCategory[cat]?.length || 0}件)</span>
                       </div>
-                      <div className="space-y-8">
+                      <div className="card-list">
                         {(groupedByCategory[cat] || []).map((article, index) => (
                           article?.url ? (
                             <div key={article.url} style={{ animationDelay: `${index * 50}ms` }}>
@@ -270,7 +270,7 @@ export default function HomePage() {
                   )
                 ))
               ) : (
-                <div className="space-y-8">
+                <div className="card-list">
                   {(filteredArticles || []).map((article, index) => (
                     article?.url ? (
                       <div key={article.url} className="animate-fadeIn" style={{ animationDelay: `${index * 50}ms` }}>

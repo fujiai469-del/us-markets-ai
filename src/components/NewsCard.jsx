@@ -45,17 +45,39 @@ export default function NewsCard({ article, onBookmark, isBookmarked, onAnalyze,
       className="neu-flat overflow-hidden cursor-pointer active:scale-[0.998] transition-all duration-300"
     >
       <div className="flex items-center gap-6 p-8">
-        {/* Thumbnail */}
-        {article?.urlToImage && (
-          <div className="relative w-[80px] h-[80px] flex-shrink-0 overflow-hidden rounded-xl neu-inset">
+        {/* Thumbnail - Always show, with placeholder if no image */}
+        <div className="relative w-[80px] h-[80px] flex-shrink-0 overflow-hidden rounded-xl neu-inset">
+          {article?.urlToImage ? (
             <img
               src={article.urlToImage}
               alt={displayTitle}
               className="w-full h-full object-cover"
-              onError={(e) => { e.target.style.display = 'none'; }}
+              onError={(e) => {
+                e.target.style.display = 'none';
+                e.target.nextSibling.style.display = 'flex';
+              }}
             />
+          ) : null}
+          {/* Placeholder - shown when no image or image fails to load */}
+          <div
+            className="absolute inset-0 flex items-center justify-center bg-[var(--bg-secondary)]"
+            style={{ display: article?.urlToImage ? 'none' : 'flex' }}
+          >
+            <svg
+              className="w-8 h-8 text-[var(--text-light)]"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"
+              />
+            </svg>
           </div>
-        )}
+        </div>
 
         {/* Content */}
         <div className="flex-1 min-w-0 flex flex-col">

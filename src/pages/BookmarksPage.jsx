@@ -62,7 +62,7 @@ export default function BookmarksPage() {
                 </span>
                 <div className="flex-1 h-px bg-gradient-to-r from-[var(--shadow-dark)] to-transparent" />
               </div>
-              <div className="space-y-8">
+              <div className="card-list">
                 {(bookmarks || []).map((article, index) => (
                   article?.url ? (
                     <div key={article.url} className="animate-fadeIn" style={{ animationDelay: `${index * 50}ms` }}>
