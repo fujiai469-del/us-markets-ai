@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import Header from './components/Header';
 import BottomNav from './components/BottomNav';
 import HomePage from './pages/HomePage';
@@ -7,10 +7,26 @@ import BookmarksPage from './pages/BookmarksPage';
 import SettingsPage from './pages/SettingsPage';
 import ErrorBoundary from './components/ErrorBoundary';
 
+// Apply saved settings on initial load
+function applyInitialSettings() {
+  const savedTheme = localStorage.getItem('us-markets-theme');
+  const savedFontSize = localStorage.getItem('us-markets-font-size') || 'medium';
+
+  if (savedTheme === 'dark') {
+    document.documentElement.classList.add('dark-mode');
+  }
+  document.documentElement.classList.add(`font-${savedFontSize}`);
+}
+
 function App() {
   const [activeTab, setActiveTab] = useState('home');
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [isRefreshing, setIsRefreshing] = useState(false);
+
+  // Apply initial settings on mount
+  useEffect(() => {
+    applyInitialSettings();
+  }, []);
 
   const handleRefresh = useCallback(() => {
     setRefreshTrigger(prev => prev + 1);

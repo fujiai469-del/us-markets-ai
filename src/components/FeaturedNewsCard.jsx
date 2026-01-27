@@ -127,7 +127,7 @@ export default function FeaturedNewsCard({ article, onBookmark, isBookmarked, on
               }
             }}
             disabled={isAnalyzing || analysis}
-            className={analysis ? 'btn-neu opacity-50 cursor-default text-[13px]' : 'btn-neu-primary text-[13px]'}
+            className={`btn-neu text-[13px] ${analysis ? 'opacity-50 cursor-default' : ''}`}
           >
             {isAnalyzing ? (
               <span className="flex items-center justify-center gap-2">

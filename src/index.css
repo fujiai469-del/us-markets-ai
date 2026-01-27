@@ -31,6 +31,53 @@
   --color-warning: #ff9500;
 }
 
+/* Dark Mode Theme */
+.dark-mode {
+  --bg-primary: #1a1d23;
+  --bg-secondary: #15171c;
+  --bg-card: #1a1d23;
+
+  --text-heading: #f0f4f8;
+  --text-body: #c8d0e7;
+  --text-muted: #8892a6;
+  --text-light: #5a6478;
+
+  --shadow-light: #22262e;
+  --shadow-dark: #12141a;
+  --shadow-darker: #0d0f14;
+}
+
+/* Font Size Settings */
+.font-small {
+  font-size: 14px;
+}
+
+.font-small h1,
+.font-small h2 {
+  font-size: 1.1rem;
+}
+
+.font-small h3 {
+  font-size: 0.9rem;
+}
+
+.font-medium {
+  font-size: 16px;
+}
+
+.font-large {
+  font-size: 18px;
+}
+
+.font-large h1,
+.font-large h2 {
+  font-size: 1.4rem;
+}
+
+.font-large h3 {
+  font-size: 1.1rem;
+}
+
 * {
   margin: 0;
   padding: 0;

@@ -1,135 +1,165 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function SettingsPage() {
-  const [newsApiKey, setNewsApiKey] = useState(localStorage.getItem('news-api-key') || '');
-  const [geminiApiKey, setGeminiApiKey] = useState(localStorage.getItem('gemini-api-key') || '');
-  const [saved, setSaved] = useState(false);
+  // テーマ設定
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    return localStorage.getItem('us-markets-theme') === 'dark';
+  });
 
-  const handleSave = () => {
-    localStorage.setItem('news-api-key', newsApiKey);
-    localStorage.setItem('gemini-api-key', geminiApiKey);
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
-  };
+  // 文字サイズ設定
+  const [fontSize, setFontSize] = useState(() => {
+    return localStorage.getItem('us-markets-font-size') || 'medium';
+  });
+
+  // テーマ変更時の処理
+  useEffect(() => {
+    localStorage.setItem('us-markets-theme', isDarkMode ? 'dark' : 'light');
+    if (isDarkMode) {
+      document.documentElement.classList.add('dark-mode');
+    } else {
+      document.documentElement.classList.remove('dark-mode');
+    }
+  }, [isDarkMode]);
+
+  // 文字サイズ変更時の処理
+  useEffect(() => {
+    localStorage.setItem('us-markets-font-size', fontSize);
+    document.documentElement.classList.remove('font-small', 'font-medium', 'font-large');
+    document.documentElement.classList.add(`font-${fontSize}`);
+  }, [fontSize]);
 
   const handleClearBookmarks = () => {
-    if (window.confirm('Clear all saved articles?')) {
+    if (window.confirm('保存した記事をすべて削除しますか？')) {
       localStorage.removeItem('us-markets-ai-bookmarks');
       window.location.reload();
     }
   };
 
   return (
-    <div className="flex-1 pb-24">
-      <div className="py-6 px-5">
+    <div className="flex-1 pt-8" style={{ paddingBottom: '180px' }}>
+      <div className="main-container">
         {/* Section Header */}
-        <div className="mb-6">
-          <h2 className="text-lg font-bold text-[#1a1a2e]">
-            Settings
+        <div className="mb-12 pt-4">
+          <h2 className="text-xl font-bold text-[var(--text-heading)]">
+            設定
           </h2>
-          <p className="text-xs text-[#718096] mt-0.5">
-            Configure your app
+          <p className="text-xs text-[var(--text-muted)] mt-1.5">
+            アプリの設定をカスタマイズ
           </p>
         </div>
 
-        <div className="space-y-5">
+        <div className="space-y-8">
           {/* About */}
-          <div className="p-5 neu-card">
-            <h3 className="text-sm font-semibold text-[#1a1a2e] mb-3 flex items-center gap-2">
-              <svg className="w-4 h-4 text-[#3b82f6]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="p-6 neu-card">
+            <h3 className="text-sm font-semibold text-[var(--text-heading)] mb-4 flex items-center gap-2">
+              <svg className="w-4 h-4 text-[var(--accent-blue)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              About
+              このアプリについて
             </h3>
-            <p className="text-sm text-[#4a5568] mb-4 leading-relaxed">
-              US Markets AI provides AI-powered analysis of market news.
+            <p className="text-sm text-[var(--text-body)] mb-4 leading-relaxed">
+              US Markets AI は、AI を活用した米国マーケットニュースの分析・翻訳アプリです。
             </p>
-            <div className="flex items-center gap-4 text-xs text-[#718096]">
+            <div className="flex items-center gap-4 text-xs text-[var(--text-muted)]">
               <span>Version 1.0.0</span>
-              <span className="w-1 h-1 rounded-full bg-[#c8d0e7]" />
+              <span className="w-1 h-1 rounded-full bg-[var(--shadow-dark)]" />
               <span>Neumorphic Edition</span>
             </div>
           </div>
 
-          {/* API Keys */}
-          <div className="p-5 neu-card">
-            <h3 className="text-sm font-semibold text-[#1a1a2e] mb-3 flex items-center gap-2">
-              <svg className="w-4 h-4 text-[#3b82f6]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+          {/* テーマ設定 */}
+          <div className="p-6 neu-card">
+            <h3 className="text-sm font-semibold text-[var(--text-heading)] mb-5 flex items-center gap-2">
+              <svg className="w-4 h-4 text-[var(--accent-blue)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
               </svg>
-              API Keys
+              テーマ設定
             </h3>
-            <p className="text-xs text-[#718096] mb-5">
-              * Not required if configured via environment variables
-            </p>
 
-            <div className="space-y-5">
+            <div className="flex items-center justify-between">
               <div>
-                <label className="block text-xs font-medium text-[#4a5568] mb-2">
-                  News API Key
-                </label>
-                <input
-                  type="password"
-                  value={newsApiKey}
-                  onChange={(e) => setNewsApiKey(e.target.value)}
-                  placeholder="Enter your key..."
-                  className="input-neu w-full py-3 px-4"
-                />
+                <span className="text-sm text-[var(--text-body)]">
+                  {isDarkMode ? 'ダークモード' : 'ライトモード'}
+                </span>
+                <p className="text-xs text-[var(--text-muted)] mt-1">
+                  画面の明るさを切り替えます
+                </p>
               </div>
-
-              <div>
-                <label className="block text-xs font-medium text-[#4a5568] mb-2">
-                  Gemini API Key
-                </label>
-                <input
-                  type="password"
-                  value={geminiApiKey}
-                  onChange={(e) => setGeminiApiKey(e.target.value)}
-                  placeholder="AIzaSy..."
-                  className="input-neu w-full py-3 px-4"
-                />
-              </div>
-
               <button
-                onClick={handleSave}
-                className={`btn-neu-primary w-full transition-all duration-300 ${saved ? 'bg-green-500' : ''}`}
+                onClick={() => setIsDarkMode(!isDarkMode)}
+                className={`relative w-14 h-8 rounded-full transition-all duration-300 ${isDarkMode
+                    ? 'bg-[var(--accent-blue)]'
+                    : 'neu-inset'
+                  }`}
               >
-                {saved ? (
-                  <span className="flex items-center justify-center gap-2">
-                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-                    </svg>
-                    Saved!
-                  </span>
-                ) : 'Save Settings'}
+                <span
+                  className={`absolute top-1 w-6 h-6 rounded-full transition-all duration-300 ${isDarkMode
+                      ? 'left-7 bg-white shadow-lg'
+                      : 'left-1 bg-[var(--bg-primary)] neu-raised-sm'
+                    }`}
+                />
               </button>
             </div>
           </div>
 
+          {/* 文字サイズ設定 */}
+          <div className="p-6 neu-card">
+            <h3 className="text-sm font-semibold text-[var(--text-heading)] mb-5 flex items-center gap-2">
+              <svg className="w-4 h-4 text-[var(--accent-blue)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 6h16M4 12h16m-7 6h7" />
+              </svg>
+              文字サイズ
+            </h3>
+
+            <div className="flex gap-3">
+              {[
+                { value: 'small', label: '小', preview: 'A' },
+                { value: 'medium', label: '中', preview: 'A' },
+                { value: 'large', label: '大', preview: 'A' },
+              ].map((option) => (
+                <button
+                  key={option.value}
+                  onClick={() => setFontSize(option.value)}
+                  className={`flex-1 py-4 rounded-xl transition-all duration-200 ${fontSize === option.value
+                      ? 'neu-inset text-[var(--accent-blue)]'
+                      : 'neu-raised-sm text-[var(--text-muted)] hover:text-[var(--text-body)]'
+                    }`}
+                >
+                  <span className={`block font-bold ${option.value === 'small' ? 'text-sm' :
+                      option.value === 'medium' ? 'text-base' : 'text-lg'
+                    }`}>
+                    {option.preview}
+                  </span>
+                  <span className="block text-xs mt-1">{option.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
           {/* Data Management */}
-          <div className="p-5 neu-card">
-            <h3 className="text-sm font-semibold text-[#1a1a2e] mb-4 flex items-center gap-2">
-              <svg className="w-4 h-4 text-[#3b82f6]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="p-6 neu-card">
+            <h3 className="text-sm font-semibold text-[var(--text-heading)] mb-5 flex items-center gap-2">
+              <svg className="w-4 h-4 text-[var(--accent-blue)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" />
               </svg>
-              Data Management
+              データ管理
             </h3>
 
             <button
               onClick={handleClearBookmarks}
-              className="w-full py-3 rounded-xl bg-red-50 border border-red-200 text-sm font-medium text-red-600 hover:bg-red-100 transition-all duration-200"
+              className="w-full py-4 rounded-xl bg-red-50 border border-red-200 text-sm font-medium text-red-600 hover:bg-red-100 transition-all duration-200"
             >
-              Clear All Saved Articles
+              保存した記事をすべて削除
             </button>
           </div>
 
           {/* Links */}
-          <div className="p-5 neu-card">
-            <h3 className="text-sm font-semibold text-[#1a1a2e] mb-4 flex items-center gap-2">
-              <svg className="w-4 h-4 text-[#3b82f6]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="p-6 neu-card">
+            <h3 className="text-sm font-semibold text-[var(--text-heading)] mb-5 flex items-center gap-2">
+              <svg className="w-4 h-4 text-[var(--accent-blue)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
               </svg>
-              Resources
+              リソース
             </h3>
 
             <div className="space-y-1">
@@ -137,9 +167,9 @@ export default function SettingsPage() {
                 href="https://newsapi.org/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-between py-3.5 text-sm text-[#4a5568] hover:text-[#3b82f6] transition-colors duration-200 border-b border-[#e8eef4] group"
+                className="flex items-center justify-between py-3.5 text-sm text-[var(--text-body)] hover:text-[var(--accent-blue)] transition-colors duration-200 border-b border-[var(--shadow-dark)]/20 group"
               >
-                <span>News API Official Site</span>
+                <span>News API 公式サイト</span>
                 <svg className="w-4 h-4 opacity-50 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                 </svg>
@@ -148,7 +178,7 @@ export default function SettingsPage() {
                 href="https://ai.google.dev/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-between py-3.5 text-sm text-[#4a5568] hover:text-[#3b82f6] transition-colors duration-200 group"
+                className="flex items-center justify-between py-3.5 text-sm text-[var(--text-body)] hover:text-[var(--accent-blue)] transition-colors duration-200 group"
               >
                 <span>Google AI Studio (Gemini)</span>
                 <svg className="w-4 h-4 opacity-50 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
