@@ -13,7 +13,9 @@ export async function analyzeNewsArticle(article) {
 {
   "summary": "50〜100文字程度の日本語要約",
   "impact": "投資への影響を50文字程度で説明",
-  "importance": "高/中/低のいずれか"
+  "importance": "高/中/低のいずれか",
+  "sentiment": "positive/negative/neutralのいずれか（株価への影響がプラスならpositive、マイナスならnegative、どちらでもないならneutral）",
+  "tickers": ["記事に関連する銘柄のティッカーシンボル（例: AAPL, TSLA, NVDA）を配列で。なければ空配列"]
 }`;
 
     const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {

@@ -30,6 +30,47 @@ export default function NewsCard({ article, onBookmark, isBookmarked, onAnalyze,
     }
   };
 
+  const getSentimentDisplay = (sentiment) => {
+    switch (sentiment) {
+      case 'positive':
+        return {
+          icon: (
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+            </svg>
+          ),
+          label: '強気',
+          bgClass: 'bg-green-50',
+          textClass: 'text-green-600',
+          borderClass: 'border-green-200',
+        };
+      case 'negative':
+        return {
+          icon: (
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" />
+            </svg>
+          ),
+          label: '弱気',
+          bgClass: 'bg-red-50',
+          textClass: 'text-red-600',
+          borderClass: 'border-red-200',
+        };
+      default:
+        return {
+          icon: (
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
+            </svg>
+          ),
+          label: '中立',
+          bgClass: 'bg-gray-50',
+          textClass: 'text-gray-600',
+          borderClass: 'border-gray-200',
+        };
+    }
+  };
+
   const displayTitle = article?.titleJa || article?.title || 'タイトルなし';
 
   const handleCardClick = (e) => {
@@ -106,16 +147,30 @@ export default function NewsCard({ article, onBookmark, isBookmarked, onAnalyze,
 
       {/* AI Analysis Result */}
       {analysis && (
-        <div className="mx-8 mb-7 p-7 analysis-card">
-          <div className="flex items-center gap-2 mb-4">
-            <div className="w-5 h-5 rounded-full bg-gradient-to-br from-[var(--accent-blue-light)] to-[var(--accent-blue)] flex items-center justify-center flex-shrink-0">
-              <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
-              </svg>
+        <div className="mx-8 mb-7 p-6 analysis-card">
+          {/* Header with sentiment indicator */}
+          <div className="flex flex-wrap items-center gap-2 mb-4">
+            {/* Sentiment Icon */}
+            {analysis?.sentiment && (
+              <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg border ${getSentimentDisplay(analysis.sentiment).bgClass} ${getSentimentDisplay(analysis.sentiment).borderClass}`}>
+                <span className={getSentimentDisplay(analysis.sentiment).textClass}>
+                  {getSentimentDisplay(analysis.sentiment).icon}
+                </span>
+                <span className={`text-[10px] font-bold ${getSentimentDisplay(analysis.sentiment).textClass}`}>
+                  {getSentimentDisplay(analysis.sentiment).label}
+                </span>
+              </div>
+            )}
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 rounded-full bg-gradient-to-br from-[var(--accent-blue-light)] to-[var(--accent-blue)] flex items-center justify-center flex-shrink-0">
+                <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+                </svg>
+              </div>
+              <span className="text-[10px] font-bold text-[var(--accent-blue)] uppercase tracking-wide">
+                AI分析
+              </span>
             </div>
-            <span className="text-[10px] font-bold text-[var(--accent-blue)] uppercase tracking-wide">
-              AI分析
-            </span>
             {analysis?.importance && (
               <span className={`ml-auto text-[10px] ${getImportanceBadgeClass(analysis.importance)}`}>
                 {getImportanceLabel(analysis.importance)}
@@ -126,9 +181,22 @@ export default function NewsCard({ article, onBookmark, isBookmarked, onAnalyze,
             {analysis?.summary || ''}
           </p>
           {analysis?.impact && (
-            <p className="text-[12px] text-[var(--text-muted)] mt-4 leading-relaxed line-clamp-2">
+            <p className="text-[12px] text-[var(--text-muted)] mt-3 leading-relaxed line-clamp-2">
               <span className="text-[var(--accent-blue)] font-bold mr-1">→</span> {analysis.impact}
             </p>
+          )}
+          {/* Related Tickers */}
+          {analysis?.tickers && analysis.tickers.length > 0 && (
+            <div className="flex items-center gap-2 mt-3 pt-3 border-t border-[var(--shadow-dark)]/30">
+              <span className="text-[10px] text-[var(--text-muted)]">関連:</span>
+              <div className="flex flex-wrap gap-1">
+                {analysis.tickers.map((ticker) => (
+                  <span key={ticker} className="text-[10px] font-semibold text-[var(--accent-blue)] bg-[var(--accent-blue)]/10 px-1.5 py-0.5 rounded">
+                    ${ticker}
+                  </span>
+                ))}
+              </div>
+            </div>
           )}
         </div>
       )}

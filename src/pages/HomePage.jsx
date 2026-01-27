@@ -1,15 +1,18 @@
 import { useEffect, useState } from 'react';
 import { useNews } from '../hooks/useNews';
 import { useBookmarks } from '../hooks/useBookmarks';
+import { useWatchlist } from '../hooks/useWatchlist';
 import { analyzeNewsArticle, translateArticles, categorizeArticles, CATEGORIES } from '../services/geminiApi';
 import FeaturedNewsCard from '../components/FeaturedNewsCard';
 import NewsCard from '../components/NewsCard';
 import ErrorBoundary from '../components/ErrorBoundary';
 import { SkeletonList } from '../components/SkeletonCard';
+import WatchlistModal from '../components/WatchlistModal';
 
 export default function HomePage({ refreshTrigger, onRefreshingChange }) {
   const { articles, loading, error, loadNews } = useNews();
   const { toggleBookmark, isBookmarked } = useBookmarks();
+  const { watchlist, addTicker, removeTicker } = useWatchlist();
   const [analyses, setAnalyses] = useState({});
   const [analyzingId, setAnalyzingId] = useState(null);
   const [translatedArticles, setTranslatedArticles] = useState([]);
@@ -17,6 +20,7 @@ export default function HomePage({ refreshTrigger, onRefreshingChange }) {
   const [viewMode, setViewMode] = useState('timeline');
   const [isCategorizing, setIsCategorizing] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('すべて');
+  const [showWatchlistModal, setShowWatchlistModal] = useState(false);
 
   const handleTranslateAndCategorize = async () => {
     if (!articles?.length || isTranslating) return;
@@ -112,6 +116,31 @@ export default function HomePage({ refreshTrigger, onRefreshingChange }) {
     return acc;
   }, {});
 
+  // Filter articles for watchlist mode - check title for ticker mentions
+  const watchlistArticles = watchlist.length > 0
+    ? (displayArticles || []).filter((article) => {
+        const title = (article?.title || '').toUpperCase();
+        const titleJa = (article?.titleJa || '').toUpperCase();
+        const description = (article?.description || '').toUpperCase();
+        // Also check analysis tickers if available
+        const analysisTickers = analyses[article?.url]?.tickers || [];
+
+        return watchlist.some((ticker) => {
+          const symbol = ticker.symbol.toUpperCase();
+          const name = (ticker.name || '').toUpperCase();
+          // Check if ticker symbol or company name appears in article
+          return (
+            title.includes(symbol) ||
+            title.includes(name) ||
+            titleJa.includes(symbol) ||
+            description.includes(symbol) ||
+            description.includes(name) ||
+            analysisTickers.some((t) => t.toUpperCase() === symbol)
+          );
+        });
+      })
+    : [];
+
   const featuredArticle = viewMode === 'timeline' ? filteredArticles?.[0] : null;
   const otherArticles = viewMode === 'timeline' ? (filteredArticles?.slice(1) || []) : (filteredArticles || []);
 
@@ -131,13 +160,19 @@ export default function HomePage({ refreshTrigger, onRefreshingChange }) {
               onClick={() => setViewMode('timeline')}
               className={`tab-item ${viewMode === 'timeline' ? 'active' : ''}`}
             >
-              タイムライン
+              時系列
             </button>
             <button
               onClick={() => setViewMode('category')}
               className={`tab-item ${viewMode === 'category' ? 'active' : ''}`}
             >
-              カテゴリー
+              カテゴリ
+            </button>
+            <button
+              onClick={() => setViewMode('watchlist')}
+              className={`tab-item ${viewMode === 'watchlist' ? 'active' : ''}`}
+            >
+              マイ銘柄
             </button>
           </div>
         </div>
@@ -287,7 +322,86 @@ export default function HomePage({ refreshTrigger, onRefreshingChange }) {
             </div>
           )}
         </ErrorBoundary>
+
+        {/* Watchlist Mode */}
+        <ErrorBoundary>
+          {viewMode === 'watchlist' && !showSkeleton && (
+            <div className="space-y-8 animate-fadeIn">
+              {/* Watchlist Header */}
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-sm font-bold text-[var(--text-heading)]">登録銘柄のニュース</h3>
+                  <p className="text-xs text-[var(--text-muted)] mt-1">
+                    {watchlist.length > 0
+                      ? `${watchlist.map(t => '$' + t.symbol).join(', ')} に関連するニュース`
+                      : '銘柄を登録してください'}
+                  </p>
+                </div>
+                <button
+                  onClick={() => setShowWatchlistModal(true)}
+                  className="btn-neu btn-neu-sm flex items-center gap-2"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                  </svg>
+                  銘柄管理
+                </button>
+              </div>
+
+              {/* Watchlist Content */}
+              {watchlist.length === 0 ? (
+                <div className="p-12 neu-card text-center">
+                  <svg className="w-16 h-16 mx-auto text-[var(--text-light)] mb-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                  </svg>
+                  <p className="text-[var(--text-body)] font-medium mb-2">マイ銘柄を登録しましょう</p>
+                  <p className="text-sm text-[var(--text-muted)] mb-6">気になる銘柄を登録すると、関連ニュースだけを表示できます</p>
+                  <button
+                    onClick={() => setShowWatchlistModal(true)}
+                    className="btn-neu-primary"
+                  >
+                    銘柄を追加する
+                  </button>
+                </div>
+              ) : watchlistArticles.length === 0 ? (
+                <div className="p-12 neu-card text-center">
+                  <svg className="w-12 h-12 mx-auto text-[var(--text-light)] mb-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+                  </svg>
+                  <p className="text-[var(--text-muted)]">現在、登録銘柄に関連するニュースがありません</p>
+                  <p className="text-xs text-[var(--text-light)] mt-2">後でもう一度確認してください</p>
+                </div>
+              ) : (
+                <div className="card-list">
+                  {watchlistArticles.map((article, index) => (
+                    article?.url ? (
+                      <div key={article.url} className="animate-fadeIn" style={{ animationDelay: `${index * 50}ms` }}>
+                        <NewsCard
+                          article={article}
+                          onBookmark={toggleBookmark}
+                          isBookmarked={isBookmarked(article?.url)}
+                          onAnalyze={handleAnalyze}
+                          analysis={analyses[article?.url]}
+                          isAnalyzing={analyzingId === article?.url}
+                        />
+                      </div>
+                    ) : null
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </ErrorBoundary>
       </div>
+
+      {/* Watchlist Modal */}
+      <WatchlistModal
+        isOpen={showWatchlistModal}
+        onClose={() => setShowWatchlistModal(false)}
+        watchlist={watchlist}
+        addTicker={addTicker}
+        removeTicker={removeTicker}
+      />
     </div>
   );
 }
