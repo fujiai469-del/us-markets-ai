@@ -48,7 +48,7 @@ export default function SettingsPage() {
           </p>
         </div>
 
-        <div className="space-y-10">
+        <div className="space-y-16">
           {/* About */}
           <div className="p-7 neu-card">
             <h3 className="text-sm font-semibold text-[var(--text-heading)] mb-4 flex items-center gap-2">

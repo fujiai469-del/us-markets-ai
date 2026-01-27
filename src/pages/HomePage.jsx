@@ -122,15 +122,7 @@ export default function HomePage({ refreshTrigger, onRefreshingChange }) {
     <div className="flex-1 pt-8" style={{ paddingBottom: '180px' }}>
       {/* Main container with generous padding and breathing room */}
       <div className="main-container">
-        {/* Section Header */}
-        <div className="mb-12 pt-4">
-          <h2 className="text-xl font-bold text-[var(--text-heading)]">
-            本日のニュース
-          </h2>
-          <p className="text-xs text-[var(--text-muted)] mt-1.5">
-            最新のマーケット情報
-          </p>
-        </div>
+
 
         {/* View Mode Toggle - Neumorphic Tab */}
         <div className="flex justify-center mb-12">
@@ -210,7 +202,7 @@ export default function HomePage({ refreshTrigger, onRefreshingChange }) {
           {viewMode === 'timeline' && !showSkeleton && (
             <div className="space-y-10">
               {featuredArticle && (
-                <div className="mb-8">
+                <div style={{ marginBottom: '48px' }}>
                   <FeaturedNewsCard
                     article={featuredArticle}
                     onBookmark={toggleBookmark}
