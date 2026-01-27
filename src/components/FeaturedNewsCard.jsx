@@ -62,9 +62,9 @@ export default function FeaturedNewsCard({ article, onBookmark, isBookmarked, on
         </div>
       )}
 
-      <div className="p-7 sm:p-8">
+      <div className="p-8 sm:p-10">
         {/* Source and Date */}
-        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-5">
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-6">
           <span className="text-xs font-semibold text-[var(--accent-blue)] uppercase tracking-wide truncate max-w-[180px] sm:max-w-none">
             {article?.source?.name || 'Unknown'}
           </span>
@@ -74,7 +74,7 @@ export default function FeaturedNewsCard({ article, onBookmark, isBookmarked, on
         </div>
 
         {/* Title */}
-        <h2 className="text-[17px] font-bold text-[var(--text-heading)] mb-5 leading-snug line-clamp-3">
+        <h2 className="text-[18px] font-bold text-[var(--text-heading)] mb-6 leading-relaxed line-clamp-3">
           {displayTitle}
         </h2>
 

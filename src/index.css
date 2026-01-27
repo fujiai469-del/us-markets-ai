@@ -61,7 +61,8 @@ body {
 /* Main content container with generous padding */
 .main-container {
   width: 100%;
-  max-width: 896px; /* max-w-4xl equivalent */
+  max-width: 896px;
+  /* max-w-4xl equivalent */
   margin-left: auto;
   margin-right: auto;
   padding-left: 24px;
@@ -94,6 +95,18 @@ body {
 @media (min-width: 640px) {
   .card-spacing {
     margin-bottom: 28px;
+  }
+}
+
+/* Card list spacing - for news card lists */
+.card-list>*+* {
+  margin-top: 32px;
+  /* space-y-8 equivalent */
+}
+
+@media (min-width: 640px) {
+  .card-list>*+* {
+    margin-top: 36px;
   }
 }
 
@@ -463,6 +476,7 @@ body {
     opacity: 0;
     transform: translateY(10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -476,9 +490,12 @@ body {
 }
 
 @keyframes pulse {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 1;
   }
+
   50% {
     opacity: 0.5;
   }
@@ -488,6 +505,7 @@ body {
   0% {
     background-position: -200% 0;
   }
+
   100% {
     background-position: 200% 0;
   }

@@ -44,10 +44,10 @@ export default function NewsCard({ article, onBookmark, isBookmarked, onAnalyze,
       onClick={handleCardClick}
       className="neu-flat overflow-hidden cursor-pointer active:scale-[0.998] transition-all duration-300"
     >
-      <div className="flex gap-5 p-7">
+      <div className="flex items-center gap-6 p-8">
         {/* Thumbnail */}
         {article?.urlToImage && (
-          <div className="relative w-[72px] h-[72px] flex-shrink-0 overflow-hidden rounded-xl neu-inset">
+          <div className="relative w-[80px] h-[80px] flex-shrink-0 overflow-hidden rounded-xl neu-inset">
             <img
               src={article.urlToImage}
               alt={displayTitle}
@@ -60,7 +60,7 @@ export default function NewsCard({ article, onBookmark, isBookmarked, onAnalyze,
         {/* Content */}
         <div className="flex-1 min-w-0 flex flex-col">
           {/* Source and Date - Responsive layout */}
-          <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-3">
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-4">
             <span className="text-[11px] font-semibold text-[var(--accent-blue)] uppercase tracking-wide truncate max-w-[150px] sm:max-w-none">
               {article?.source?.name || 'Unknown'}
             </span>
@@ -69,13 +69,13 @@ export default function NewsCard({ article, onBookmark, isBookmarked, onAnalyze,
             </span>
           </div>
 
-          <h3 className="text-[14px] font-bold text-[var(--text-heading)] leading-snug line-clamp-2">
+          <h3 className="text-[15px] font-bold text-[var(--text-heading)] leading-relaxed line-clamp-2">
             {displayTitle}
           </h3>
 
           {/* Category */}
           {article?.category && (
-            <span className="mt-4 text-[10px] font-medium text-[var(--text-muted)] bg-[var(--bg-secondary)] py-1.5 px-3 rounded-lg self-start">
+            <span className="mt-5 text-[10px] font-medium text-[var(--text-muted)] bg-[var(--bg-secondary)] py-2 px-4 rounded-lg self-start">
               {article.category}
             </span>
           )}
@@ -84,7 +84,7 @@ export default function NewsCard({ article, onBookmark, isBookmarked, onAnalyze,
 
       {/* AI Analysis Result */}
       {analysis && (
-        <div className="mx-7 mb-6 p-6 analysis-card">
+        <div className="mx-8 mb-7 p-7 analysis-card">
           <div className="flex items-center gap-2 mb-4">
             <div className="w-5 h-5 rounded-full bg-gradient-to-br from-[var(--accent-blue-light)] to-[var(--accent-blue)] flex items-center justify-center flex-shrink-0">
               <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
@@ -112,7 +112,7 @@ export default function NewsCard({ article, onBookmark, isBookmarked, onAnalyze,
       )}
 
       {/* Action Buttons */}
-      <div className="flex items-center justify-end gap-4 px-7 pb-7">
+      <div className="flex items-center justify-end gap-4 px-8 pb-8">
         <button
           onClick={(e) => {
             e.stopPropagation();
