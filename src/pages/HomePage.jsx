@@ -18,24 +18,6 @@ export default function HomePage({ refreshTrigger, onRefreshingChange }) {
   const [isCategorizing, setIsCategorizing] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('すべて');
 
-  // Initial load
-  useEffect(() => {
-    loadNews();
-  }, [loadNews]);
-
-  // Handle refresh trigger from header
-  useEffect(() => {
-    if (refreshTrigger > 0) {
-      handleRefresh();
-    }
-  }, [refreshTrigger]);
-
-  useEffect(() => {
-    if (articles?.length > 0 && translatedArticles?.length === 0) {
-      handleTranslateAndCategorize();
-    }
-  }, [articles]);
-
   const handleTranslateAndCategorize = async () => {
     if (!articles?.length || isTranslating) return;
     setIsTranslating(true);
@@ -61,13 +43,30 @@ export default function HomePage({ refreshTrigger, onRefreshingChange }) {
     }
   };
 
-  const handleRefresh = async () => {
-    if (onRefreshingChange) onRefreshingChange(true);
-    setSelectedCategory('すべて');
-    await loadNews();
-    setTranslatedArticles([]);
-    if (onRefreshingChange) onRefreshingChange(false);
-  };
+  // Initial load
+  useEffect(() => {
+    loadNews();
+  }, [loadNews]);
+
+  // Handle refresh trigger from header
+  useEffect(() => {
+    if (refreshTrigger > 0) {
+      const doRefresh = async () => {
+        if (onRefreshingChange) onRefreshingChange(true);
+        setSelectedCategory('すべて');
+        await loadNews();
+        setTranslatedArticles([]);
+        if (onRefreshingChange) onRefreshingChange(false);
+      };
+      doRefresh();
+    }
+  }, [refreshTrigger, loadNews, onRefreshingChange]);
+
+  useEffect(() => {
+    if (articles?.length > 0 && translatedArticles?.length === 0) {
+      handleTranslateAndCategorize();
+    }
+  }, [articles]);
 
   const handleAnalyze = async (article) => {
     if (!article?.url) return;
