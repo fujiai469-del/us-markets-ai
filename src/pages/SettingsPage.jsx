@@ -48,8 +48,8 @@ export default function SettingsPage() {
           </p>
         </div>
 
-        {/* Settings Sections - Extreme spacing: space-y-10 (40px) on mobile, space-y-12 (48px) on desktop */}
-        <div className="space-y-10 sm:space-y-12">
+        {/* Settings Sections - Very large spacing: space-y-16 (64px) on mobile, space-y-20 (80px) on desktop */}
+        <div className="space-y-16 sm:space-y-20">
 
           {/* About - Extra padding */}
           <div className="p-7 sm:p-10 neu-card">

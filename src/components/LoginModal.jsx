@@ -53,7 +53,7 @@ export default function LoginModal({ isOpen, onClose }) {
       style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
       onClick={handleOverlayClick}
     >
-      <div className="relative w-[95%] sm:w-full max-w-md neu-card p-6 sm:p-8 md:p-10 animate-fadeIn">
+      <div className="relative w-[90%] sm:w-full max-w-sm neu-card p-8 sm:p-10 md:p-12 animate-fadeIn">
         {/* Close button */}
         <button
           onClick={onClose}

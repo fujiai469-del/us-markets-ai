@@ -43,15 +43,15 @@ export default function BookmarksPage() {
 
         {(!bookmarks || bookmarks.length === 0) ? (
           <div className="flex items-center justify-center" style={{ minHeight: 'calc(100vh - 300px)' }}>
-            <div className="p-12 neu-card text-center animate-fadeIn">
-              <svg className="w-16 h-16 mx-auto text-[var(--text-light)] mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="p-16 neu-card text-center animate-fadeIn" style={{ width: '90%', maxWidth: '400px' }}>
+              <svg className="w-20 h-20 mx-auto text-[var(--text-light)] mb-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
               </svg>
-              <p className="text-lg text-[var(--text-body)] mb-3">
+              <p className="text-xl text-[var(--text-body)] mb-5 leading-relaxed">
                 保存した記事はありません
               </p>
-              <p className="text-sm text-[var(--text-muted)]">
-                記事をブックマークして後で読む
+              <p className="text-base text-[var(--text-muted)] leading-relaxed">
+                記事をブックマークして<br />後で読む
               </p>
             </div>
           </div>
