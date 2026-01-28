@@ -15,7 +15,7 @@ export default function Header({ onRefresh, isLoading }) {
             {/* Logo Icon - Using the new app icon */}
             <div className="w-10 h-10 flex items-center justify-center">
               <img
-                src="/app-icon.png"
+                src="/header-icon.png"
                 alt="US Markets AI"
                 className="w-10 h-10 object-contain"
               />
