@@ -5,6 +5,9 @@ export async function fetchUSStockNews() {
     const response = await fetch(`${API_BASE}?type=stocks`);
 
     if (!response.ok) {
+      if (response.status === 429) {
+        throw new Error('APIリクエスト上限に達しました。しばらく待ってから再試行してください（無料プランは1日100回まで）');
+      }
       throw new Error(`News API error: ${response.status}`);
     }
 
@@ -21,6 +24,9 @@ export async function fetchTopBusinessNews() {
     const response = await fetch(`${API_BASE}?type=headlines`);
 
     if (!response.ok) {
+      if (response.status === 429) {
+        throw new Error('APIリクエスト上限に達しました。しばらく待ってから再試行してください（無料プランは1日100回まで）');
+      }
       throw new Error(`News API error: ${response.status}`);
     }
 
@@ -37,6 +43,9 @@ export async function searchNews(query) {
     const response = await fetch(`${API_BASE}?type=search&query=${encodeURIComponent(query)}`);
 
     if (!response.ok) {
+      if (response.status === 429) {
+        throw new Error('APIリクエスト上限に達しました。しばらく待ってから再試行してください（無料プランは1日100回まで）');
+      }
       throw new Error(`News API error: ${response.status}`);
     }
 
@@ -70,6 +79,9 @@ export async function fetchWatchlistNews(watchlist) {
     const response = await fetch(`${API_BASE}?type=watchlist&tickers=${encodeURIComponent(tickersParam)}`);
 
     if (!response.ok) {
+      if (response.status === 429) {
+        throw new Error('APIリクエスト上限に達しました。しばらく待ってから再試行してください（無料プランは1日100回まで）');
+      }
       throw new Error(`News API error: ${response.status}`);
     }
 
