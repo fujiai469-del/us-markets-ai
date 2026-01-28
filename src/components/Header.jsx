@@ -12,12 +12,13 @@ export default function Header({ onRefresh, isLoading }) {
       <header className="sticky top-0 z-50 header-neu">
         <div className="flex items-center justify-between px-5 py-4">
           <div className="flex items-center gap-3">
-            {/* Logo Icon */}
-            <div className="w-11 h-11 neu-raised-sm flex items-center justify-center">
-              <svg className="w-6 h-6 text-[var(--accent-blue)]" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z" />
-                <path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z" fillOpacity="0.3" transform="translate(0, 2)" />
-              </svg>
+            {/* Logo Icon - Using the new app icon */}
+            <div className="w-11 h-11 rounded-xl overflow-hidden neu-raised-sm">
+              <img
+                src="/app-icon.jpg"
+                alt="US Markets AI"
+                className="w-full h-full object-cover"
+              />
             </div>
             <div>
               <h1 className="text-lg font-bold text-[var(--text-heading)] tracking-tight">
