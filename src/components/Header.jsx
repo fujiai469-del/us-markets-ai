@@ -12,12 +12,12 @@ export default function Header({ onRefresh, isLoading }) {
       <header className="sticky top-0 z-50 header-neu">
         <div className="flex items-center justify-between px-5 py-4">
           <div className="flex items-center gap-3">
-            {/* Logo Icon - Using the new app icon with neumorphic style */}
-            <div className="w-11 h-11 rounded-xl overflow-hidden icon-btn-neu p-0">
+            {/* Logo Icon - Using the new app icon */}
+            <div className="w-10 h-10 flex items-center justify-center">
               <img
                 src="/app-icon.png"
                 alt="US Markets AI"
-                className="w-full h-full object-contain"
+                className="w-10 h-10 object-contain"
               />
             </div>
             <div>
