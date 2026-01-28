@@ -3,20 +3,34 @@ const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/
 
 export async function analyzeNewsArticle(article) {
   try {
-    const prompt = `以下のニュース記事を分析し、米国株投資家向けに要約してください。
+    const prompt = `あなたは米国株投資家向けの金融アナリストです。以下のニュース記事を分析し、投資判断に役立つ具体的な情報を抽出してください。
 
+【記事情報】
 タイトル: ${article.title}
 概要: ${article.description || '概要なし'}
 ソース: ${article.source?.name || '不明'}
 
-以下の形式でJSON形式で回答してください（JSONのみ、他のテキストは不要）:
+【重要な指示】
+- summaryは「タイトルの言い換え」ではなく、記事の中身から得られる**具体的な情報**を記載すること
+- 以下の要素を可能な限り含めること：
+  * 具体的な数字（株価変動率、売上高、予測数値、金額など）
+  * ニュースの背景や原因（なぜこのニュースが発生したのか）
+  * 今後の市場・株価への具体的な影響や懸念点
+- 抽象的な表現（「市場に影響がある」「注目される」など）だけで終わらせない
+- タイトルをそのまま繰り返すことは禁止
+
+【出力形式】JSON形式で回答してください（JSONのみ、他のテキストは不要）:
 {
-  "summary": "50〜100文字程度の日本語要約",
-  "impact": "投資への影響を50文字程度で説明",
+  "summary": "60〜120文字の日本語要約。具体的な数字・背景・影響を含めること",
+  "impact": "投資家が取るべきアクションや注意点を50文字程度で説明",
   "importance": "高/中/低のいずれか",
   "sentiment": "positive/negative/neutralのいずれか（株価への影響がプラスならpositive、マイナスならnegative、どちらでもないならneutral）",
   "tickers": ["記事に関連する銘柄のティッカーシンボル（例: AAPL, TSLA, NVDA）を配列で。なければ空配列"]
-}`;
+}
+
+【良い要約の例】
+タイトル：「NVIDIAの株価が急落」
+良い要約：「米国による新たな輸出規制への懸念から前日比-5%の大幅下落。アナリストは短期的な収益への影響は限定的とするものの、中国市場での売上減少リスクが指摘されている。」`;
 
     const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
       method: 'POST',

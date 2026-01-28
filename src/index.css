@@ -691,3 +691,99 @@ a:focus-visible {
 .safe-bottom {
   padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 140px);
 }
+
+/* ========================
+   Mobile-First Optimizations
+   ======================== */
+
+/* Modal Mobile Optimization */
+@media (max-width: 640px) {
+  .modal-mobile {
+    width: 95% !important;
+    max-width: none !important;
+    margin: 0 auto;
+  }
+
+  .modal-mobile-padding {
+    padding: 28px !important;
+  }
+
+  .modal-mobile-spacing>*+* {
+    margin-top: 24px !important;
+  }
+}
+
+/* Touch Target - Minimum 48px for mobile */
+.touch-target {
+  min-height: 48px;
+  min-width: 48px;
+}
+
+.touch-target-input {
+  min-height: 52px;
+  padding-top: 14px !important;
+  padding-bottom: 14px !important;
+}
+
+/* Mobile News Card Analysis Improvements */
+@media (max-width: 640px) {
+  .analysis-card-mobile {
+    padding: 16px 18px;
+  }
+
+  .analysis-card-mobile .analysis-summary {
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .analysis-tags-mobile {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 8px;
+  }
+
+  /* Featured card image height reduction on mobile */
+  .featured-image-mobile {
+    height: 160px !important;
+  }
+}
+
+/* Breathing room for modals */
+.modal-breathe {
+  padding: 32px;
+}
+
+@media (max-width: 640px) {
+  .modal-breathe {
+    padding: 24px;
+  }
+}
+
+.modal-section-spacing>*+* {
+  margin-top: 28px;
+}
+
+/* Form elements mobile optimization */
+@media (max-width: 640px) {
+  .input-neu-mobile {
+    min-height: 52px;
+    padding: 16px 18px;
+    font-size: 16px;
+    /* Prevents iOS zoom on focus */
+  }
+
+  .btn-mobile {
+    min-height: 48px;
+    padding: 14px 20px;
+    font-size: 15px;
+  }
+}
+
+/* Watchlist item mobile */
+@media (max-width: 640px) {
+  .watchlist-item-mobile {
+    padding: 18px !important;
+    gap: 16px !important;
+  }
+}

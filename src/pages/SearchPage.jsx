@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNews } from '../hooks/useNews';
 import { useBookmarks } from '../hooks/useBookmarks';
-import { analyzeNewsArticle } from '../services/geminiApi';
+import { analyzeNewsArticle, translateArticles, categorizeArticles } from '../services/geminiApi';
 import NewsCard from '../components/NewsCard';
 import ErrorBoundary from '../components/ErrorBoundary';
 import { SkeletonList } from '../components/SkeletonCard';
@@ -24,11 +24,52 @@ export default function SearchPage() {
   const [analyses, setAnalyses] = useState({});
   const [analyzingId, setAnalyzingId] = useState(null);
   const [hasSearched, setHasSearched] = useState(false);
+  const [translatedArticles, setTranslatedArticles] = useState([]);
+  const [isTranslating, setIsTranslating] = useState(false);
+
+  // Translate search results when articles change
+  useEffect(() => {
+    const translateResults = async () => {
+      if (!articles || articles.length === 0) {
+        setTranslatedArticles([]);
+        return;
+      }
+
+      setIsTranslating(true);
+      try {
+        const [translated, categorized] = await Promise.all([
+          translateArticles(articles),
+          categorizeArticles(articles),
+        ]);
+
+        const merged = (translated || []).map((article, index) => {
+          let category = 'その他';
+          if (categorized?.[index]?.category) {
+            const cat = categorized[index].category;
+            category = typeof cat === 'string' ? cat : 'その他';
+          }
+          return { ...article, category };
+        });
+
+        setTranslatedArticles(merged);
+      } catch (err) {
+        console.error('Translation failed:', err);
+        setTranslatedArticles(articles);
+      } finally {
+        setIsTranslating(false);
+      }
+    };
+
+    if (hasSearched && articles?.length > 0) {
+      translateResults();
+    }
+  }, [articles, hasSearched]);
 
   const handleSearch = (e) => {
     e.preventDefault();
     if (query.trim()) {
       setHasSearched(true);
+      setTranslatedArticles([]); // Reset translations for new search
       search(query);
     }
   };
@@ -36,8 +77,12 @@ export default function SearchPage() {
   const handleQuickSearch = (term) => {
     setQuery(term);
     setHasSearched(true);
+    setTranslatedArticles([]); // Reset translations for new search
     search(term);
   };
+
+  // Use translated articles if available, otherwise use original
+  const displayArticles = translatedArticles.length > 0 ? translatedArticles : articles;
 
   const handleAnalyze = async (article) => {
     if (!article?.url) return;
@@ -110,7 +155,17 @@ export default function SearchPage() {
           </div>
         </div>
 
-        {loading && <SkeletonList count={3} showFeatured={false} />}
+        {(loading || isTranslating) && <SkeletonList count={3} showFeatured={false} />}
+
+        {/* Translation indicator */}
+        {isTranslating && articles?.length > 0 && (
+          <div className="mb-8 p-5 neu-flat flex items-center gap-4">
+            <div className="w-5 h-5 spinner-neu animate-spin flex-shrink-0" />
+            <span className="text-sm text-[var(--text-muted)]">
+              翻訳・カテゴリ分類中...
+            </span>
+          </div>
+        )}
 
         {error && (
           <div className="p-5 rounded-xl bg-red-50 border border-red-200 text-red-600 text-sm mb-6">
@@ -118,7 +173,7 @@ export default function SearchPage() {
           </div>
         )}
 
-        {!loading && hasSearched && (!articles || articles.length === 0) && !error && (
+        {!loading && !isTranslating && hasSearched && (!displayArticles || displayArticles.length === 0) && !error && (
           <div className="p-12 neu-card text-center animate-fadeIn">
             <svg className="w-12 h-12 mx-auto text-[var(--text-light)] mb-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -132,16 +187,16 @@ export default function SearchPage() {
 
         {/* Search Results */}
         <ErrorBoundary>
-          {hasSearched && !loading && articles?.length > 0 && (
+          {hasSearched && !loading && !isTranslating && displayArticles?.length > 0 && (
             <div className="animate-fadeIn">
               <div className="mb-6 flex items-center gap-3">
                 <span className="text-xs font-bold text-[var(--text-muted)]">
-                  {articles.length}件の結果
+                  {displayArticles.length}件の結果
                 </span>
                 <div className="flex-1 h-px bg-gradient-to-r from-[var(--shadow-dark)] to-transparent" />
               </div>
               <div className="card-list">
-                {(articles || []).map((article, index) => (
+                {(displayArticles || []).map((article, index) => (
                   article?.url ? (
                     <div key={article.url} className="animate-fadeIn" style={{ animationDelay: `${index * 50}ms` }}>
                       <NewsCard

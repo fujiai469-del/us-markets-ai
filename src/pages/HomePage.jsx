@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useNews } from '../hooks/useNews';
 import { useBookmarks } from '../hooks/useBookmarks';
 import { useWatchlist } from '../hooks/useWatchlist';
 import { analyzeNewsArticle, translateArticles, categorizeArticles, CATEGORIES } from '../services/geminiApi';
+import { matchesWatchlist } from '../utils/newsFilters';
 import FeaturedNewsCard from '../components/FeaturedNewsCard';
 import NewsCard from '../components/NewsCard';
 import ErrorBoundary from '../components/ErrorBoundary';
@@ -10,17 +11,19 @@ import { SkeletonList } from '../components/SkeletonCard';
 import WatchlistModal from '../components/WatchlistModal';
 
 export default function HomePage({ refreshTrigger, onRefreshingChange }) {
-  const { articles, loading, error, loadNews } = useNews();
+  const { articles, loading, error, loadNews, loadWatchlistNews } = useNews();
   const { toggleBookmark, isBookmarked } = useBookmarks();
   const { watchlist, addTicker, removeTicker } = useWatchlist();
   const [analyses, setAnalyses] = useState({});
   const [analyzingId, setAnalyzingId] = useState(null);
   const [translatedArticles, setTranslatedArticles] = useState([]);
+  const [watchlistTranslatedArticles, setWatchlistTranslatedArticles] = useState([]);
   const [isTranslating, setIsTranslating] = useState(false);
   const [viewMode, setViewMode] = useState('timeline');
   const [isCategorizing, setIsCategorizing] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('すべて');
   const [showWatchlistModal, setShowWatchlistModal] = useState(false);
+  const [watchlistArticlesRaw, setWatchlistArticlesRaw] = useState([]);
 
   const handleTranslateAndCategorize = async () => {
     if (!articles?.length || isTranslating) return;
@@ -81,6 +84,52 @@ export default function HomePage({ refreshTrigger, onRefreshingChange }) {
     }
   }, [articles]);
 
+  // Load watchlist news when switching to watchlist mode or when watchlist changes
+  const loadWatchlistData = useCallback(async () => {
+    if (watchlist.length === 0) {
+      setWatchlistArticlesRaw([]);
+      setWatchlistTranslatedArticles([]);
+      return;
+    }
+
+    const results = await loadWatchlistNews(watchlist);
+    setWatchlistArticlesRaw(results);
+
+    // Translate watchlist articles
+    if (results.length > 0) {
+      setIsTranslating(true);
+      try {
+        const [translated, categorized] = await Promise.all([
+          translateArticles(results),
+          categorizeArticles(results),
+        ]);
+
+        const merged = (translated || []).map((article, index) => {
+          let category = 'その他';
+          if (categorized?.[index]?.category) {
+            const cat = categorized[index].category;
+            category = typeof cat === 'string' ? cat : 'その他';
+          }
+          return { ...article, category };
+        });
+
+        setWatchlistTranslatedArticles(merged);
+      } catch (err) {
+        console.error('Watchlist translation failed:', err);
+        setWatchlistTranslatedArticles(results);
+      } finally {
+        setIsTranslating(false);
+      }
+    }
+  }, [watchlist, loadWatchlistNews]);
+
+  // Load watchlist news when viewMode changes to watchlist
+  useEffect(() => {
+    if (viewMode === 'watchlist') {
+      loadWatchlistData();
+    }
+  }, [viewMode, loadWatchlistData]);
+
   const handleAnalyze = async (article) => {
     if (!article?.url) return;
     const articleId = article.url;
@@ -116,29 +165,14 @@ export default function HomePage({ refreshTrigger, onRefreshingChange }) {
     return acc;
   }, {});
 
-  // Filter articles for watchlist mode - check title for ticker mentions
+  // Use dedicated watchlist articles (from API) with fallback to filtered display articles
   const watchlistArticles = watchlist.length > 0
-    ? (displayArticles || []).filter((article) => {
-        const title = (article?.title || '').toUpperCase();
-        const titleJa = (article?.titleJa || '').toUpperCase();
-        const description = (article?.description || '').toUpperCase();
-        // Also check analysis tickers if available
-        const analysisTickers = analyses[article?.url]?.tickers || [];
-
-        return watchlist.some((ticker) => {
-          const symbol = ticker.symbol.toUpperCase();
-          const name = (ticker.name || '').toUpperCase();
-          // Check if ticker symbol or company name appears in article
-          return (
-            title.includes(symbol) ||
-            title.includes(name) ||
-            titleJa.includes(symbol) ||
-            description.includes(symbol) ||
-            description.includes(name) ||
-            analysisTickers.some((t) => t.toUpperCase() === symbol)
-          );
-        });
-      })
+    ? (watchlistTranslatedArticles.length > 0
+        ? watchlistTranslatedArticles
+        : watchlistArticlesRaw.length > 0
+          ? watchlistArticlesRaw
+          : (displayArticles || []).filter(article => matchesWatchlist(article, watchlist, analyses))
+      )
     : [];
 
   const featuredArticle = viewMode === 'timeline' ? filteredArticles?.[0] : null;

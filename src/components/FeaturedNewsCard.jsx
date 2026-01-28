@@ -1,6 +1,10 @@
+import { getRegionLabel } from '../utils/newsFilters';
+
 export default function FeaturedNewsCard({ article, onBookmark, isBookmarked, onAnalyze, analysis, isAnalyzing }) {
   // Guard clause - return null if article is undefined
   if (!article) return null;
+
+  const regionLabel = getRegionLabel(article);
 
   const formatDate = (dateString) => {
     if (!dateString) return '';
@@ -35,7 +39,7 @@ export default function FeaturedNewsCard({ article, onBookmark, isBookmarked, on
       case 'positive':
         return {
           icon: (
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
             </svg>
           ),
@@ -47,7 +51,7 @@ export default function FeaturedNewsCard({ article, onBookmark, isBookmarked, on
       case 'negative':
         return {
           icon: (
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" />
             </svg>
           ),
@@ -59,7 +63,7 @@ export default function FeaturedNewsCard({ article, onBookmark, isBookmarked, on
       default:
         return {
           icon: (
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
             </svg>
           ),
@@ -85,9 +89,9 @@ export default function FeaturedNewsCard({ article, onBookmark, isBookmarked, on
       onClick={handleCardClick}
       className="neu-card overflow-hidden cursor-pointer active:scale-[0.998] transition-all duration-300"
     >
-      {/* Main Image */}
+      {/* Main Image - Reduced height on mobile */}
       {article?.urlToImage && (
-        <div className="relative h-44 overflow-hidden">
+        <div className="relative h-40 sm:h-44 overflow-hidden">
           <img
             src={article.urlToImage}
             alt={displayTitle}
@@ -97,71 +101,67 @@ export default function FeaturedNewsCard({ article, onBookmark, isBookmarked, on
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
 
           {/* Featured Badge */}
-          <div className="absolute top-4 left-4 badge-featured">
+          <div className="absolute top-3 left-3 sm:top-4 sm:left-4 badge-featured text-[10px] sm:text-[11px] px-3 py-1.5 sm:px-4 sm:py-2">
             注目
           </div>
         </div>
       )}
 
-      <div className="p-8 sm:p-10">
+      <div className="p-6 sm:p-8 md:p-10">
         {/* Source and Date */}
-        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-6">
-          <span className="text-xs font-semibold text-[var(--accent-blue)] uppercase tracking-wide truncate max-w-[180px] sm:max-w-none">
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-4 sm:mb-6">
+          <span className="text-[11px] sm:text-xs font-semibold text-[var(--accent-blue)] uppercase tracking-wide truncate max-w-[150px] sm:max-w-none">
             {article?.source?.name || 'Unknown'}
           </span>
-          <span className="text-[11px] text-[var(--text-light)] whitespace-nowrap">
+          <span className="text-[10px] sm:text-[11px] text-[var(--text-light)] whitespace-nowrap">
             • {formatDate(article?.publishedAt)}
           </span>
         </div>
 
         {/* Title */}
-        <h2 className="text-[18px] font-bold text-[var(--text-heading)] mb-6 leading-relaxed line-clamp-3">
+        <h2 className="text-[16px] sm:text-[18px] font-bold text-[var(--text-heading)] mb-5 sm:mb-6 leading-relaxed line-clamp-3">
+          {regionLabel && (
+            <span className="inline-block text-[10px] sm:text-[11px] font-bold text-orange-600 bg-orange-50 border border-orange-200 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded mr-2 align-middle">
+              {regionLabel}
+            </span>
+          )}
           {displayTitle}
         </h2>
 
         {/* AI Analysis Result */}
         {analysis && (
-          <div className="mb-7 p-6 analysis-card">
-            {/* Header with sentiment indicator */}
-            <div className="flex items-center gap-3 mb-4">
+          <div className="mb-5 sm:mb-7 p-4 sm:p-6 analysis-card">
+            {/* Header with sentiment and importance - Left aligned with gap */}
+            <div className="flex flex-wrap items-center justify-start gap-2 mb-4">
               {/* Sentiment Icon */}
               {analysis?.sentiment && (
-                <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border ${getSentimentDisplay(analysis.sentiment).bgClass} ${getSentimentDisplay(analysis.sentiment).borderClass}`}>
+                <div className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg border ${getSentimentDisplay(analysis.sentiment).bgClass} ${getSentimentDisplay(analysis.sentiment).borderClass}`}>
                   <span className={getSentimentDisplay(analysis.sentiment).textClass}>
                     {getSentimentDisplay(analysis.sentiment).icon}
                   </span>
-                  <span className={`text-xs font-bold ${getSentimentDisplay(analysis.sentiment).textClass}`}>
+                  <span className={`text-[10px] sm:text-xs font-bold ${getSentimentDisplay(analysis.sentiment).textClass}`}>
                     {getSentimentDisplay(analysis.sentiment).label}
                   </span>
                 </div>
               )}
-              <div className="flex items-center gap-2">
-                <div className="w-5 h-5 rounded-full bg-gradient-to-br from-[var(--accent-blue-light)] to-[var(--accent-blue)] flex items-center justify-center flex-shrink-0">
-                  <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
-                  </svg>
-                </div>
-                <span className="text-[10px] font-bold text-[var(--accent-blue)] uppercase tracking-wide">
-                  AI分析
-                </span>
-              </div>
               {analysis?.importance && (
-                <span className={`ml-auto text-[10px] ${getImportanceBadgeClass(analysis.importance)}`}>
+                <span className={`text-[10px] ${getImportanceBadgeClass(analysis.importance)}`}>
                   {getImportanceLabel(analysis.importance)}
                 </span>
               )}
             </div>
-            <p className="text-[13px] text-[var(--text-body)] leading-relaxed line-clamp-3">
+            {/* Summary with improved mobile readability */}
+            <p className="text-[14px] sm:text-[13px] text-[var(--text-body)] leading-[1.6] sm:leading-relaxed">
               {analysis?.summary || ''}
             </p>
             {analysis?.impact && (
-              <p className="text-[12px] text-[var(--text-muted)] mt-4 leading-relaxed line-clamp-2">
+              <p className="text-[12px] text-[var(--text-muted)] mt-3 sm:mt-4 leading-[1.6] sm:leading-relaxed">
                 <span className="text-[var(--accent-blue)] font-bold mr-1">→</span> {analysis.impact}
               </p>
             )}
             {/* Related Tickers */}
             {analysis?.tickers && analysis.tickers.length > 0 && (
-              <div className="flex items-center gap-2 mt-4 pt-4 border-t border-[var(--shadow-dark)]/30">
+              <div className="flex flex-wrap items-center gap-2 mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-[var(--shadow-dark)]/30">
                 <span className="text-[10px] text-[var(--text-muted)]">関連銘柄:</span>
                 <div className="flex flex-wrap gap-1.5">
                   {analysis.tickers.map((ticker) => (
@@ -176,7 +176,7 @@ export default function FeaturedNewsCard({ article, onBookmark, isBookmarked, on
         )}
 
         {/* Action Buttons - moved up, no divider */}
-        <div className="flex items-center justify-end gap-4">
+        <div className="flex items-center justify-end gap-3 sm:gap-4">
           <button
             onClick={(e) => {
               e.stopPropagation();
@@ -185,7 +185,7 @@ export default function FeaturedNewsCard({ article, onBookmark, isBookmarked, on
               }
             }}
             disabled={isAnalyzing || analysis}
-            className={`btn-neu text-[13px] ${analysis ? 'opacity-50 cursor-default' : ''}`}
+            className={`btn-neu text-[12px] sm:text-[13px] min-h-[44px] ${analysis ? 'opacity-50 cursor-default' : ''}`}
           >
             {isAnalyzing ? (
               <span className="flex items-center justify-center gap-2">

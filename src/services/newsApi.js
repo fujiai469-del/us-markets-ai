@@ -47,3 +47,36 @@ export async function searchNews(query) {
     throw error;
   }
 }
+
+/**
+ * Fetch news specifically related to watchlist tickers
+ * @param {Array<{symbol: string, name: string}>} watchlist - Array of ticker objects
+ * @returns {Promise<Array>} - Array of news articles
+ */
+export async function fetchWatchlistNews(watchlist) {
+  if (!watchlist || watchlist.length === 0) {
+    return [];
+  }
+
+  try {
+    // Create a list of tickers and company names for the query
+    const searchTerms = watchlist.flatMap(t => [
+      t.symbol,
+      // Extract main company name (without Inc., Corp., etc.)
+      t.name?.replace(/\s*(Inc\.?|Corp\.?|Corporation|Company|Co\.?|Ltd\.?)\s*/gi, '').trim()
+    ]).filter(Boolean);
+
+    const tickersParam = searchTerms.join(',');
+    const response = await fetch(`${API_BASE}?type=watchlist&tickers=${encodeURIComponent(tickersParam)}`);
+
+    if (!response.ok) {
+      throw new Error(`News API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data.articles || [];
+  } catch (error) {
+    console.error('Failed to fetch watchlist news:', error);
+    throw error;
+  }
+}

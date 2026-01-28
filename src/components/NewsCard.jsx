@@ -1,6 +1,10 @@
+import { getRegionLabel } from '../utils/newsFilters';
+
 export default function NewsCard({ article, onBookmark, isBookmarked, onAnalyze, analysis, isAnalyzing }) {
   // Guard clause - return null if article is undefined
   if (!article) return null;
+
+  const regionLabel = getRegionLabel(article);
 
   const formatDate = (dateString) => {
     if (!dateString) return '';
@@ -85,9 +89,9 @@ export default function NewsCard({ article, onBookmark, isBookmarked, onAnalyze,
       onClick={handleCardClick}
       className="neu-flat overflow-hidden cursor-pointer active:scale-[0.998] transition-all duration-300"
     >
-      <div className="flex items-center gap-6 p-8">
+      <div className="flex items-center gap-4 sm:gap-6 p-5 sm:p-8">
         {/* Thumbnail - Always show, with placeholder if no image */}
-        <div className="relative w-[80px] h-[80px] flex-shrink-0 overflow-hidden rounded-xl neu-inset">
+        <div className="relative w-[64px] h-[64px] sm:w-[80px] sm:h-[80px] flex-shrink-0 overflow-hidden rounded-xl neu-inset">
           {article?.urlToImage ? (
             <img
               src={article.urlToImage}
@@ -105,7 +109,7 @@ export default function NewsCard({ article, onBookmark, isBookmarked, onAnalyze,
             style={{ display: article?.urlToImage ? 'none' : 'flex' }}
           >
             <svg
-              className="w-8 h-8 text-[var(--text-light)]"
+              className="w-6 h-6 sm:w-8 sm:h-8 text-[var(--text-light)]"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -123,22 +127,27 @@ export default function NewsCard({ article, onBookmark, isBookmarked, onAnalyze,
         {/* Content */}
         <div className="flex-1 min-w-0 flex flex-col">
           {/* Source and Date - Responsive layout */}
-          <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-4">
-            <span className="text-[11px] font-semibold text-[var(--accent-blue)] uppercase tracking-wide truncate max-w-[150px] sm:max-w-none">
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-3 sm:mb-4">
+            <span className="text-[10px] sm:text-[11px] font-semibold text-[var(--accent-blue)] uppercase tracking-wide truncate max-w-[120px] sm:max-w-none">
               {article?.source?.name || 'Unknown'}
             </span>
-            <span className="text-[10px] text-[var(--text-light)] whitespace-nowrap">
+            <span className="text-[9px] sm:text-[10px] text-[var(--text-light)] whitespace-nowrap">
               • {formatDate(article?.publishedAt)}
             </span>
           </div>
 
-          <h3 className="text-[15px] font-bold text-[var(--text-heading)] leading-relaxed line-clamp-2">
+          <h3 className="text-[14px] sm:text-[15px] font-bold text-[var(--text-heading)] leading-relaxed line-clamp-2">
+            {regionLabel && (
+              <span className="inline-block text-[9px] sm:text-[10px] font-bold text-orange-600 bg-orange-50 border border-orange-200 px-1.5 sm:px-2 py-0.5 rounded mr-2 align-middle">
+                {regionLabel}
+              </span>
+            )}
             {displayTitle}
           </h3>
 
           {/* Category */}
           {article?.category && typeof article.category === 'string' && (
-            <span className="mt-5 text-[10px] font-medium text-[var(--text-muted)] bg-[var(--bg-secondary)] py-2 px-4 rounded-lg self-start">
+            <span className="mt-4 sm:mt-5 text-[9px] sm:text-[10px] font-medium text-[var(--text-muted)] bg-[var(--bg-secondary)] py-1.5 sm:py-2 px-3 sm:px-4 rounded-lg self-start">
               {article.category}
             </span>
           )}
@@ -147,9 +156,9 @@ export default function NewsCard({ article, onBookmark, isBookmarked, onAnalyze,
 
       {/* AI Analysis Result */}
       {analysis && (
-        <div className="mx-8 mb-7 p-6 analysis-card">
-          {/* Header with sentiment indicator */}
-          <div className="flex flex-wrap items-center gap-2 mb-4">
+        <div className="mx-5 sm:mx-8 mb-5 sm:mb-7 p-4 sm:p-6 analysis-card">
+          {/* Header with sentiment and importance - Left aligned with gap */}
+          <div className="flex flex-wrap items-center justify-start gap-2 mb-4">
             {/* Sentiment Icon */}
             {analysis?.sentiment && (
               <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg border ${getSentimentDisplay(analysis.sentiment).bgClass} ${getSentimentDisplay(analysis.sentiment).borderClass}`}>
@@ -161,33 +170,24 @@ export default function NewsCard({ article, onBookmark, isBookmarked, onAnalyze,
                 </span>
               </div>
             )}
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded-full bg-gradient-to-br from-[var(--accent-blue-light)] to-[var(--accent-blue)] flex items-center justify-center flex-shrink-0">
-                <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
-                </svg>
-              </div>
-              <span className="text-[10px] font-bold text-[var(--accent-blue)] uppercase tracking-wide">
-                AI分析
-              </span>
-            </div>
             {analysis?.importance && (
-              <span className={`ml-auto text-[10px] ${getImportanceBadgeClass(analysis.importance)}`}>
+              <span className={`text-[10px] ${getImportanceBadgeClass(analysis.importance)}`}>
                 {getImportanceLabel(analysis.importance)}
               </span>
             )}
           </div>
-          <p className="text-[13px] text-[var(--text-body)] leading-relaxed line-clamp-3">
+          {/* Summary with improved mobile readability */}
+          <p className="text-[14px] sm:text-[13px] text-[var(--text-body)] leading-[1.6] sm:leading-relaxed">
             {analysis?.summary || ''}
           </p>
           {analysis?.impact && (
-            <p className="text-[12px] text-[var(--text-muted)] mt-3 leading-relaxed line-clamp-2">
+            <p className="text-[12px] text-[var(--text-muted)] mt-3 leading-[1.6] sm:leading-relaxed">
               <span className="text-[var(--accent-blue)] font-bold mr-1">→</span> {analysis.impact}
             </p>
           )}
           {/* Related Tickers */}
           {analysis?.tickers && analysis.tickers.length > 0 && (
-            <div className="flex items-center gap-2 mt-3 pt-3 border-t border-[var(--shadow-dark)]/30">
+            <div className="flex flex-wrap items-center gap-2 mt-3 pt-3 border-t border-[var(--shadow-dark)]/30">
               <span className="text-[10px] text-[var(--text-muted)]">関連:</span>
               <div className="flex flex-wrap gap-1">
                 {analysis.tickers.map((ticker) => (
@@ -202,7 +202,7 @@ export default function NewsCard({ article, onBookmark, isBookmarked, onAnalyze,
       )}
 
       {/* Action Buttons */}
-      <div className="flex items-center justify-end gap-4 px-8 pb-8">
+      <div className="flex items-center justify-end gap-3 sm:gap-4 px-5 sm:px-8 pb-5 sm:pb-8">
         <button
           onClick={(e) => {
             e.stopPropagation();
@@ -211,7 +211,7 @@ export default function NewsCard({ article, onBookmark, isBookmarked, onAnalyze,
             }
           }}
           disabled={isAnalyzing || analysis}
-          className={`btn-neu btn-neu-sm text-[12px] ${analysis ? 'opacity-50 cursor-default' : ''}`}
+          className={`btn-neu btn-neu-sm text-[12px] min-h-[44px] ${analysis ? 'opacity-50 cursor-default' : ''}`}
         >
           {isAnalyzing ? (
             <span className="flex items-center gap-2">
