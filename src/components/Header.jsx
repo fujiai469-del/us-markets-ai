@@ -15,7 +15,7 @@ export default function Header({ onRefresh, isLoading }) {
             {/* Logo Icon - Using the new app icon with neumorphic style */}
             <div className="w-11 h-11 rounded-xl overflow-hidden icon-btn-neu p-0">
               <img
-                src="/app-icon.jpg"
+                src="/app-icon.png"
                 alt="US Markets AI"
                 className="w-full h-full object-contain"
               />

@@ -10,7 +10,7 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: 'prompt',
-      includeAssets: ['app-icon.jpg', 'icon.svg'],
+      includeAssets: ['app-icon.png', 'icon.svg'],
       manifest: {
         name: '米国株AIニュース',
         short_name: '米国株AI',
@@ -23,19 +23,19 @@ export default defineConfig({
         start_url: '/',
         icons: [
           {
-            src: 'app-icon.jpg',
+            src: 'app-icon.png',
             sizes: '192x192',
-            type: 'image/jpeg'
+            type: 'image/png'
           },
           {
-            src: 'app-icon.jpg',
+            src: 'app-icon.png',
             sizes: '512x512',
-            type: 'image/jpeg'
+            type: 'image/png'
           },
           {
-            src: 'app-icon.jpg',
+            src: 'app-icon.png',
             sizes: '512x512',
-            type: 'image/jpeg',
+            type: 'image/png',
             purpose: 'any maskable'
           }
         ]
