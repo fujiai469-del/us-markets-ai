@@ -34,44 +34,42 @@ export default function NewsCard({ article, onBookmark, isBookmarked, onAnalyze,
     }
   };
 
-  const getSentimentDisplay = (sentiment) => {
+  const getSentimentClass = (sentiment) => {
+    switch (sentiment) {
+      case 'positive': return 'tag-sentiment tag-sentiment-positive';
+      case 'negative': return 'tag-sentiment tag-sentiment-negative';
+      default: return 'tag-sentiment tag-sentiment-neutral';
+    }
+  };
+
+  const getSentimentIcon = (sentiment) => {
     switch (sentiment) {
       case 'positive':
-        return {
-          icon: (
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-            </svg>
-          ),
-          label: '強気',
-          bgClass: 'bg-green-50',
-          textClass: 'text-green-600',
-          borderClass: 'border-green-200',
-        };
+        return (
+          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+          </svg>
+        );
       case 'negative':
-        return {
-          icon: (
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" />
-            </svg>
-          ),
-          label: '弱気',
-          bgClass: 'bg-red-50',
-          textClass: 'text-red-600',
-          borderClass: 'border-red-200',
-        };
+        return (
+          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" />
+          </svg>
+        );
       default:
-        return {
-          icon: (
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
-            </svg>
-          ),
-          label: '中立',
-          bgClass: 'bg-gray-50',
-          textClass: 'text-gray-600',
-          borderClass: 'border-gray-200',
-        };
+        return (
+          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
+          </svg>
+        );
+    }
+  };
+
+  const getSentimentLabel = (sentiment) => {
+    switch (sentiment) {
+      case 'positive': return '強気';
+      case 'negative': return '弱気';
+      default: return '中立';
     }
   };
 
@@ -159,19 +157,16 @@ export default function NewsCard({ article, onBookmark, isBookmarked, onAnalyze,
         <div className="mx-5 sm:mx-8 mb-5 sm:mb-7 p-4 sm:p-6 analysis-card">
           {/* Header with sentiment and importance - Left aligned with gap */}
           <div className="flex flex-wrap items-center justify-start gap-2 mb-4">
-            {/* Sentiment Icon */}
+            {/* Sentiment Tag - Unified size */}
             {analysis?.sentiment && (
-              <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg border ${getSentimentDisplay(analysis.sentiment).bgClass} ${getSentimentDisplay(analysis.sentiment).borderClass}`}>
-                <span className={getSentimentDisplay(analysis.sentiment).textClass}>
-                  {getSentimentDisplay(analysis.sentiment).icon}
-                </span>
-                <span className={`text-[10px] font-bold ${getSentimentDisplay(analysis.sentiment).textClass}`}>
-                  {getSentimentDisplay(analysis.sentiment).label}
-                </span>
+              <div className={getSentimentClass(analysis.sentiment)}>
+                {getSentimentIcon(analysis.sentiment)}
+                <span>{getSentimentLabel(analysis.sentiment)}</span>
               </div>
             )}
+            {/* Importance Tag - Unified size */}
             {analysis?.importance && (
-              <span className={`text-[10px] ${getImportanceBadgeClass(analysis.importance)}`}>
+              <span className={getImportanceBadgeClass(analysis.importance)}>
                 {getImportanceLabel(analysis.importance)}
               </span>
             )}
