@@ -1,68 +1,74 @@
 <!doctype html>
 <html lang="ja">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/jpeg" href="/app-icon.jpg" />
-    <link rel="apple-touch-icon" href="/app-icon.jpg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <meta name="theme-color" content="#f0f4f8" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <meta name="apple-mobile-web-app-title" content="US Markets AI" />
-    <meta name="description" content="AIで米国株ニュースを分析するモダンなPWAアプリ" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <title>米国株AIニュース</title>
-    <style>
-      /* Splash Screen Styles */
-      #splash-screen {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: #ffffff;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        z-index: 9999;
-        transition: opacity 0.4s ease-out;
-      }
-      #splash-screen.fade-out {
-        opacity: 0;
-        pointer-events: none;
-      }
-      #splash-screen img {
-        width: 120px;
-        height: 120px;
-        border-radius: 24px;
-        box-shadow: 0 10px 40px rgba(59, 130, 246, 0.15);
-      }
-    </style>
-  </head>
-  <body>
-    <!-- Splash Screen -->
-    <div id="splash-screen">
-      <img src="/app-icon.jpg" alt="US Markets AI" />
-    </div>
-    
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-    <script>
-      // Hide splash screen after app loads
-      window.addEventListener('load', function() {
-        setTimeout(function() {
-          const splash = document.getElementById('splash-screen');
-          if (splash) {
-            splash.classList.add('fade-out');
-            setTimeout(function() {
-              splash.remove();
-            }, 400);
-          }
-        }, 800);
-      });
-    </script>
-  </body>
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/jpeg" href="/app-icon.jpg" />
+  <link rel="apple-touch-icon" href="/app-icon.jpg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#f0f4f8" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="US Markets AI" />
+  <meta name="description" content="AIで米国株ニュースを分析するモダンなPWAアプリ" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <title>米国株AIニュース</title>
+  <style>
+    /* Splash Screen Styles */
+    #splash-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      transition: opacity 0.4s ease-out;
+    }
+
+    #splash-screen.fade-out {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    #splash-screen img {
+      width: 100px;
+      height: 100px;
+      object-fit: contain;
+      border-radius: 20px;
+      box-shadow: 0 10px 40px rgba(59, 130, 246, 0.15);
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Splash Screen -->
+  <div id="splash-screen">
+    <img src="/app-icon.jpg" alt="US Markets AI" />
+  </div>
+
+  <div id="root"></div>
+  <script type="module" src="/src/main.jsx"></script>
+  <script>
+    // Hide splash screen after app loads
+    window.addEventListener('load', function () {
+      setTimeout(function () {
+        const splash = document.getElementById('splash-screen');
+        if (splash) {
+          splash.classList.add('fade-out');
+          setTimeout(function () {
+            splash.remove();
+          }, 400);
+        }
+      }, 800);
+    });
+  </script>
+</body>
+
 </html>
