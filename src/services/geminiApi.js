@@ -19,13 +19,27 @@ export async function analyzeNewsArticle(article) {
 - 抽象的な表現（「市場に影響がある」「注目される」など）だけで終わらせない
 - タイトルをそのまま繰り返すことは禁止
 
+【関連銘柄(tickers)の選定ルール - 非常に重要】
+- 記事の内容を注意深く読み、**その記事に直接関係する企業のみ**をティッカーシンボルで挙げてください
+- 安易にGOOG、AAPL、MSFT、AMZN、NVDAなどの大手テック銘柄を入れないでください
+- 記事内に具体的な企業名が言及されている場合、その企業のティッカーを優先してください
+- 以下のような多様な銘柄から、記事内容に応じて適切なものを選んでください：
+  * 金融：JPM、GS、BAC、C、MS、WFC、BLK、AXP
+  * エネルギー：XOM、CVX、COP、SLB、OXY、EOG
+  * ヘルスケア：JNJ、PFE、UNH、MRK、ABBV、LLY、BMY
+  * 消費財：PG、KO、PEP、WMT、COST、TGT、NKE
+  * 工業：CAT、BA、HON、GE、MMM、UPS、RTX
+  * テック以外にも目を向けること
+- 記事に関連企業の記載がない場合は、**空配列[]を返してください**（無理に埋めない）
+- 最大5銘柄まで、本当に関連するものだけを選ぶ
+
 【出力形式】JSON形式で回答してください（JSONのみ、他のテキストは不要）:
 {
   "summary": "60〜120文字の日本語要約。具体的な数字・背景・影響を含めること",
   "impact": "投資家が取るべきアクションや注意点を50文字程度で説明",
   "importance": "高/中/低のいずれか",
   "sentiment": "positive/negative/neutralのいずれか（株価への影響がプラスならpositive、マイナスならnegative、どちらでもないならneutral）",
-  "tickers": ["記事に関連する銘柄のティッカーシンボル（例: AAPL, TSLA, NVDA）を配列で。なければ空配列"]
+  "tickers": ["記事に直接関連する銘柄のみ（例: XOM, JPM, LLY）。なければ空配列[]を返す"]
 }
 
 【良い要約の例】

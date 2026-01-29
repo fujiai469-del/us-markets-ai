@@ -168,11 +168,11 @@ export default function HomePage({ refreshTrigger, onRefreshingChange }) {
   // Use dedicated watchlist articles (from API) with fallback to filtered display articles
   const watchlistArticles = watchlist.length > 0
     ? (watchlistTranslatedArticles.length > 0
-        ? watchlistTranslatedArticles
-        : watchlistArticlesRaw.length > 0
-          ? watchlistArticlesRaw
-          : (displayArticles || []).filter(article => matchesWatchlist(article, watchlist, analyses))
-      )
+      ? watchlistTranslatedArticles
+      : watchlistArticlesRaw.length > 0
+        ? watchlistArticlesRaw
+        : (displayArticles || []).filter(article => matchesWatchlist(article, watchlist, analyses))
+    )
     : [];
 
   const featuredArticle = viewMode === 'timeline' ? filteredArticles?.[0] : null;
@@ -211,27 +211,121 @@ export default function HomePage({ refreshTrigger, onRefreshingChange }) {
           </div>
         </div>
 
-        {/* Category Tabs */}
+        {/* Category Tabs - ニュースライト風アイコン＋テキストメニュー */}
         {viewMode === 'category' && (
           <div className="mb-10 animate-fadeIn">
-            <div className="flex flex-wrap gap-4">
-              <button
-                onClick={() => setSelectedCategory('すべて')}
-                className={`chip-neu ${selectedCategory === 'すべて' ? 'active' : ''}`}
-              >
-                すべて ({displayArticles?.length || 0})
-              </button>
-              {(CATEGORIES || []).map(cat => (
-                (categoryCounts[cat] || 0) > 0 && (
+            <div className="category-scroll-container">
+              <div className="category-icon-menu">
+                {/* すべて */}
+                <button
+                  onClick={() => setSelectedCategory('すべて')}
+                  className={`category-icon-item ${selectedCategory === 'すべて' ? 'active' : ''}`}
+                >
+                  <div className="category-icon-wrapper">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                    </svg>
+                  </div>
+                  <span className="category-icon-label">すべて</span>
+                  <span className="category-icon-count">{displayArticles?.length || 0}</span>
+                </button>
+
+                {/* 経済 */}
+                {(categoryCounts['経済'] || 0) > 0 && (
                   <button
-                    key={cat}
-                    onClick={() => setSelectedCategory(cat)}
-                    className={`chip-neu ${selectedCategory === cat ? 'active' : ''}`}
+                    onClick={() => setSelectedCategory('経済')}
+                    className={`category-icon-item ${selectedCategory === '経済' ? 'active' : ''}`}
                   >
-                    {cat} ({categoryCounts[cat] || 0})
+                    <div className="category-icon-wrapper">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                      </svg>
+                    </div>
+                    <span className="category-icon-label">経済</span>
+                    <span className="category-icon-count">{categoryCounts['経済']}</span>
                   </button>
-                )
-              ))}
+                )}
+
+                {/* 国際情勢 */}
+                {(categoryCounts['国際情勢'] || 0) > 0 && (
+                  <button
+                    onClick={() => setSelectedCategory('国際情勢')}
+                    className={`category-icon-item ${selectedCategory === '国際情勢' ? 'active' : ''}`}
+                  >
+                    <div className="category-icon-wrapper">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                    <span className="category-icon-label">国際情勢</span>
+                    <span className="category-icon-count">{categoryCounts['国際情勢']}</span>
+                  </button>
+                )}
+
+                {/* テクノロジー */}
+                {(categoryCounts['テクノロジー'] || 0) > 0 && (
+                  <button
+                    onClick={() => setSelectedCategory('テクノロジー')}
+                    className={`category-icon-item ${selectedCategory === 'テクノロジー' ? 'active' : ''}`}
+                  >
+                    <div className="category-icon-wrapper">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                      </svg>
+                    </div>
+                    <span className="category-icon-label">テクノロジー</span>
+                    <span className="category-icon-count">{categoryCounts['テクノロジー']}</span>
+                  </button>
+                )}
+
+                {/* 企業決算 */}
+                {(categoryCounts['企業決算'] || 0) > 0 && (
+                  <button
+                    onClick={() => setSelectedCategory('企業決算')}
+                    className={`category-icon-item ${selectedCategory === '企業決算' ? 'active' : ''}`}
+                  >
+                    <div className="category-icon-wrapper">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
+                    </div>
+                    <span className="category-icon-label">企業決算</span>
+                    <span className="category-icon-count">{categoryCounts['企業決算']}</span>
+                  </button>
+                )}
+
+                {/* 金融政策 */}
+                {(categoryCounts['金融政策'] || 0) > 0 && (
+                  <button
+                    onClick={() => setSelectedCategory('金融政策')}
+                    className={`category-icon-item ${selectedCategory === '金融政策' ? 'active' : ''}`}
+                  >
+                    <div className="category-icon-wrapper">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z" />
+                      </svg>
+                    </div>
+                    <span className="category-icon-label">金融政策</span>
+                    <span className="category-icon-count">{categoryCounts['金融政策']}</span>
+                  </button>
+                )}
+
+                {/* その他 */}
+                {(categoryCounts['その他'] || 0) > 0 && (
+                  <button
+                    onClick={() => setSelectedCategory('その他')}
+                    className={`category-icon-item ${selectedCategory === 'その他' ? 'active' : ''}`}
+                  >
+                    <div className="category-icon-wrapper">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z" />
+                      </svg>
+                    </div>
+                    <span className="category-icon-label">その他</span>
+                    <span className="category-icon-count">{categoryCounts['その他']}</span>
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         )}
