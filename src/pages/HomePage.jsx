@@ -345,8 +345,37 @@ export default function HomePage({ refreshTrigger, onRefreshingChange }) {
 
         {/* Error */}
         {error && (
-          <div className="p-5 rounded-xl bg-red-50 border border-red-200 text-red-600 text-sm mb-6">
-            エラー: {error}
+          <div className="p-6 neu-card mb-6">
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 neu-raised rounded-full flex items-center justify-center flex-shrink-0">
+                <span className="text-xl">
+                  {error.includes('上限') || error.includes('429') ? '⏱' :
+                    error.includes('fetch') || error.includes('network') || error.includes('Network') ? '📡' :
+                      error.includes('401') || error.includes('403') ? '🔒' :
+                        error.includes('500') || error.includes('502') || error.includes('503') ? '🔧' : '⚠'}
+                </span>
+              </div>
+              <div className="flex-1">
+                <h4 className="text-sm font-semibold text-[var(--text-heading)] mb-1">
+                  {error.includes('上限') || error.includes('429') ? 'サービス利用制限' :
+                    error.includes('fetch') || error.includes('network') || error.includes('Network') ? '通信エラー' :
+                      error.includes('401') || error.includes('403') ? '認証エラー' :
+                        error.includes('500') || error.includes('502') || error.includes('503') ? 'サーバーエラー' : 'エラー'}
+                </h4>
+                <p className="text-xs text-[var(--text-muted)] mb-2">
+                  {error.includes('上限') || error.includes('429') ? 'APIの利用上限に達しました。しばらく時間をおいてから再度お試しください。' :
+                    error.includes('fetch') || error.includes('network') || error.includes('Network') ? 'インターネット接続を確認してください。' :
+                      error.includes('401') || error.includes('403') ? 'サービスへの接続に問題が発生しました。' :
+                        error.includes('500') || error.includes('502') || error.includes('503') ? 'サービスが一時的に利用できません。' : error}
+                </p>
+                <p className="text-xs text-[var(--text-light)]">
+                  エラーコード: {error.includes('上限') || error.includes('429') ? 'RATE_LIMIT' :
+                    error.includes('fetch') || error.includes('network') || error.includes('Network') ? 'NETWORK' :
+                      error.includes('401') || error.includes('403') ? 'AUTH' :
+                        error.includes('500') || error.includes('502') || error.includes('503') ? 'SERVER' : 'API_ERROR'}
+                </p>
+              </div>
+            </div>
           </div>
         )}
 

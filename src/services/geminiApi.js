@@ -69,6 +69,21 @@ export async function analyzeNewsArticle(article) {
     });
 
     if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      const errorMessage = errorData?.error?.message || '';
+
+      // レート制限・クオータ超過
+      if (response.status === 429 || errorMessage.includes('quota') || errorMessage.includes('RATE_LIMIT')) {
+        throw new Error('AI APIの利用上限に達しました。しばらく時間をおいてから再度お試しください。');
+      }
+      // 認証エラー
+      if (response.status === 401 || response.status === 403) {
+        throw new Error('AI APIへの認証に失敗しました。');
+      }
+      // サーバーエラー
+      if (response.status >= 500) {
+        throw new Error('AIサービスが一時的に利用できません。');
+      }
       throw new Error(`Gemini API error: ${response.status}`);
     }
 
@@ -126,6 +141,18 @@ ${titlesToTranslate}
     });
 
     if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      const errorMessage = errorData?.error?.message || '';
+
+      if (response.status === 429 || errorMessage.includes('quota') || errorMessage.includes('RATE_LIMIT')) {
+        throw new Error('AI APIの利用上限に達しました。');
+      }
+      if (response.status === 401 || response.status === 403) {
+        throw new Error('AI APIへの認証に失敗しました。');
+      }
+      if (response.status >= 500) {
+        throw new Error('AIサービスが一時的に利用できません。');
+      }
       throw new Error(`Gemini API error: ${response.status}`);
     }
 
@@ -216,6 +243,18 @@ ${articleList}
     });
 
     if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      const errorMessage = errorData?.error?.message || '';
+
+      if (response.status === 429 || errorMessage.includes('quota') || errorMessage.includes('RATE_LIMIT')) {
+        throw new Error('AI APIの利用上限に達しました。');
+      }
+      if (response.status === 401 || response.status === 403) {
+        throw new Error('AI APIへの認証に失敗しました。');
+      }
+      if (response.status >= 500) {
+        throw new Error('AIサービスが一時的に利用できません。');
+      }
       throw new Error(`Gemini API error: ${response.status}`);
     }
 
